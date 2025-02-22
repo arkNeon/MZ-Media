@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
+  <title>Delivery Invoices</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background-color: #1e1e2d;
+      color: #fff;
+    }
+    
+    /* Extended mode (to be implemented later) */
+       /* ------------------------------
+       Expanded Mode Sidebar
+       ------------------------------ */
+       .sidebar-extended {
+      width: 220px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow-y: auto;
+      display: none;  /* initially hidden */
+      transition: transform 0.3s ease;
+      padding-top: 5px;
+    }
+    
+    .sidebar-extended .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-extended .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-extended .menu li {
+      position: relative;
+    }
+    
+    /* Buttons in extended mode show both icon and text */
+    .sidebar-extended button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .sidebar-extended button:hover {
+      background-color: #252525;
+    }
+    
+    .sidebar-extended button i {
+      min-width: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+    
+    /* The text label appears in a <span> and is left-aligned */
+    .sidebar-extended button span {
+      margin-left: 10px;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+    
+    /* Dropdown toggle buttons: text on left, chevron on right */
+    .sidebar-extended li.has-submenu > button {
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Make the text label take available space */
+    .sidebar-extended li.has-submenu > button span {
+      flex: 1;
+      text-align: left;
+      
+    }
+    
+    /* The chevron icon stays on the right */
+    .sidebar-extended li.has-submenu > button > i:last-child {
+      margin-left: auto;
+      
+    }
+    
+    /* Submenu container in extended mode */
+    .sidebar-extended li.has-submenu .submenu {
+      list-style: none;
+      padding-left: 10px;
+      display: none;
+      flex-direction: column;
+      position: relative;
+      
+      /* A vertical line on the left side of the submenu list */
+      border-left: 1px solid #fff;
+      margin-left: 25px;
+    }
+    
+    .sidebar-extended li.has-submenu.active .submenu {
+      display: flex;
+    }
+    
+    /* Tree branch for each submenu item: a small horizontal line */
+    .sidebar-extended .submenu li {
+      position: relative;
+      padding-left: 0px;
+     
+    }
+    .sidebar-extended .menu > li {
+  margin-bottom: 15.2px;
+}
+
+    .sidebar-extended .submenu li::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      width: 10px;
+      border-top: 1px solid #fff;
+      transform: translateY(-50%);
+    }
+    .sidebar-extended li.has-submenu.active > button i.fa-chevron-down {
+  transform: rotate(180deg);
+}
+.sidebar-extended .submenu li button {
+      padding: 8px 10px;    /* Smaller padding than main buttons */
+      font-size: 14px;      /* Smaller overall font size */
+    }
+    
+    .sidebar-extended .submenu li button i {
+      font-size: 16px;      /* Smaller icon size */
+      min-width: 24px;      /* Adjust if necessary */
+    }
+    
+    .sidebar-extended .submenu li button span {
+      font-size: 14px;      /* Smaller text size */
+      margin-left: 8px;     /* Adjust spacing if needed */
+    }
+    
+    /* When expanded sidebar is visible, shift main content */
+    .sidebar-extended.active ~ .main-content {
+      margin-left: 220px;
+    }
+
+    
+    /* Collapsed mode */
+    .sidebar-collapsed {
+      width: 60px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow: visible;
+    }
+    
+    .sidebar-collapsed .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-collapsed .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-collapsed .menu li {
+      position: relative;
+    }
+    .sidebar-collapsed button i {
+     
+      font-size: 18px;
+    }
+    /* All buttons: only icons are visible */
+    .sidebar-collapsed button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    /* Hide inner text and dropdown icons except tooltip */
+    .sidebar-collapsed button span:not(.tooltip),
+    .sidebar-collapsed button .dropdown-icon {
+      display: none;
+    }
+    
+    /* Standard menu items without submenu */
+    .sidebar-collapsed .menu li:not(.has-submenu) > button {
+      width: 60px;
+      height: 54px;
+    }
+    
+    /* For submenu items, use a flex container with no gap */
+    .sidebar-collapsed .menu li.has-submenu {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px 0 0 10px;
+      overflow: visible;
+      font-size: 14px; /* Restore icon font size */
+      transition: background-color 0.3s ease;
+    }
+    
+    /* The main button remains fixed at 60px */
+    .sidebar-collapsed .menu li.has-submenu > button {
+      width: 60px;
+      height: 54px;
+      flex-shrink: 0;
+      
+    }
+    
+    /* The submenu container sits directly beside the main button */
+    .sidebar-collapsed .menu li.has-submenu .submenu {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+     
+    }
+    
+    /* On hover, set a unified background and slide out the submenu */
+    .sidebar-collapsed .menu li.has-submenu:hover {
+      background-color: #252525;
+    
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu:hover .submenu {
+      transform: scaleX(1);
+      background-color: #252525;
+      border-radius: 0 10px 10px 0;
+    
+    }
+    
+    /* Submenu item buttons – no extra margins */
+    .sidebar-collapsed .menu li.has-submenu .submenu li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button {
+      width: 40px;
+      height: 54px;
+      background: none;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      font-size: 14px !important;
+    }
+    /* Scale up the submenu icon on hover */
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button:hover i {
+      transform: scale(1.2);
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      transition: transform 0.3s ease;
+    }
+    
+    /* Tooltip styling */
+    /* Tooltip styling for all buttons (main and submenu) */
+    .sidebar-collapsed .menu li > button .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #575757;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 10;
+    }
+    
+    .sidebar-collapsed .menu li > button:hover .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    .main-content {
+            margin-left: 60px;
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.05s;
+         
+        }
+
+       
+    .header-container {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #3a3f5c, #3a3f5c);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin: -20px!important;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 20px;
+            border-bottom: 1px solid #ffffff;
+            color: #f9f9f9;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .top-header .icons {
+            display: flex;
+            gap: 25px;
+        }
+
+        .top-header i {
+            font-size: 18px;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+        }
+        .top-header i:hover {
+            
+            color: #fefefe;
+            scale: 1.1;
+        }
+        /* Bottom Header */
+        .bottom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .barber-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+.barber-profile i {
+    font-size: 30px;
+    color: #dcdcdc;
+}
+
+        .barber-profile h1 {
+            margin: 0;
+            font-size: 17px;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .header-actions button {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    padding: 5px 10px;
+    border: 1px solid gray; /* Gray border */
+    background: transparent; /* Transparent background */
+    color: white;
+    cursor: pointer;
+    border-radius: 12px; /* 12px border radius */
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.header-actions button i {
+    font-size: 16px;
+}
+
+/* Hover Effect */
+.header-actions button:hover {
+  background: #6c5ce7;
+    color: white;
+}
+ /* Active state for filter buttons (always showing hover effect) */
+ .header-actions button.active {
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+      color: white;
+    }
+        .report-btn { background: #007bff; color: white; }
+
+        .logo-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .logo {
+            height: 25px;
+        }
+        /* Summary Cards */
+       
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            text-align: center;
+        }
+
+        th {
+            background: #444;
+        }
+
+        .plus-btn, .equal-btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .plus-btn { background: #28a745; color: white; }
+        .equal-btn { background: #007bff; color: white; }
+       
+  /* Responsive container for cards */
+  .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 10px;
+      margin-top: 40px;
+      transition: opacity 0.5s ease;
+    }
+    
+    /* Card Styles */
+    .card {
+      background: linear-gradient(135deg, #2a2a3a, #3a3a4a);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      width: 300px;
+ 
+      transition: box-shadow 0.3s ease;
+      text-align: left; /* Ensures text stays left-aligned */
+      padding: 0px;
+    }
+    
+    .card:hover {
+   
+      box-shadow: 2px 2px 10px 1px #6c5ce79d;
+    }
+    
+    /* Card Header */
+    .card-header {
+      background: linear-gradient(135deg, #3a3f5c, #3a3f5c);
+      /* Reduced padding to minimize extra space in header */
+      padding: 2px 10px;
+      color: #fff;
+      margin-bottom: 0px !important;
+    }
+    
+    .card-header h2 {
+      font-size: 17px;
+      margin-bottom: 0px;
+      text-align: left;
+    }
+    
+    .card-header p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      text-align: left;
+    }
+    
+    /* Card Body */
+    .card-body {
+
+      padding: 0px 10px !important;
+      color: #ddd;
+      text-align: left;
+    }
+    
+    .info-group {
+      margin-bottom: 16px;
+    }
+    
+    .info-group p {
+      font-size: 0.9rem;
+      color: #ddd;
+      margin-bottom: 6px;
+      text-align: left;
+    }
+    
+    .info-group p strong {
+      color: #fff;
+    }
+    
+    /* Services Section */
+    .services {
+      margin-bottom: 16px;
+      margin-top: 0px !important;
+      padding: 0 !important;
+    }
+    
+    .services h4 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+      color: #ddd;
+      text-align: left;
+    }
+    
+    .services ul {
+      list-style: none;
+      padding-left: 0;
+      text-align: left;
+    }
+    
+    .services ul li {
+      background: #40404f;
+      margin-bottom: 6px;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #ccc;
+      text-align: left;
+    }
+    .services-assigned {
+      border-top: 1px solid #444;
+      margin-bottom: 16px;
+      margin-top: 0px !important;
+      padding: 0 !important;
+    }
+    .services-assigned h4 {
+      font-size: 1rem;
+      margin-bottom: 6px;
+      color: #ddd;
+      text-align: left;
+    }
+    
+    .services-assigned ul {
+      list-style: none;
+      padding-left: 0;
+      text-align: left;
+    }
+    
+    .services-assigned ul li {
+      background: #40404f;
+      margin-bottom: 6px;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #ccc;
+      text-align: left;
+    }
+    /* Card Footer */
+    .card-footer {
+      border-top: 1px solid #444;
+      padding: 10px 20px;
+      text-align: center;
+    }
+    
+    .invoice-button {
+        background: #6c5ce7;
+      color: #fff;
+      padding: 8px 0px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+     
+    }
+    .invoice-buton {
+        background: #e76c5c;
+      color: #fff;
+      padding: 8px 0px;
+      border: none;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+     
+    }
+    .invoice-button:hover {
+        background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+    }
+    .invoice-button-completed {
+        background: #12c2e9;
+      color: #fff;
+      padding: 8px 0;
+      border: none;
+      margin-bottom: 8px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+     
+    }
+    .invoice-button-completed1 {
+        background: #c471ed;
+      color: #fff;
+      padding: 8px 0;
+      border: none;
+      margin-bottom: 8px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+     
+    }
+    .invoice-button-completed:hover {
+        background: #d16938;
+    }
+    .invoice-button-completed1:hover {
+        background: #d16938;
+    }
+   
+    /* Container for the progress bar */
+    .progress-bar {
+  position: relative;
+  width: 100%;
+}
+
+/* The track (background) for the progress fill */
+.progress-track {
+  background: #ecf0f1;
+  border-radius: 6px;
+  height: 15px;
+  overflow: hidden;
+}
+
+/* The animated fill that represents progress */
+.progress-fill {
+  background: #6c5ce7;
+  height: 100%;
+  width: 0;
+  animation: fillBar 2s forwards;
+  transition: background 0.5s ease;
+}
+.progress-fill2 {
+  background: #6c5ce7;
+  height: 100%;
+  width: 0;
+  animation: fillBar2 2s forwards;
+  transition: background 0.5s ease;
+}
+.progress-fill4 {
+  background: #6c5ce7;
+  height: 100%;
+  width: 0;
+  animation: fillBar4 2s forwards;
+  transition: background 0.5s ease;
+}
+/* Hover effect: change the fill to a vibrant gradient */
+.progress-bar:hover .progress-fill {
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+}
+
+/* Centered percentage text on the progress bar */
+.progress-percentage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+
+/* Animation keyframes for the progress fill */
+@keyframes fillBar {
+  from {
+    width: 0;
+  }
+  to {
+    width: 70%;
+  }
+}
+@keyframes fillBar4 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 90%;
+  }
+}
+@keyframes fillBar2 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 50%;
+  }
+}
+/* Container for the time tracker section with background and shadow */
+
+/* Main container for the time tracker bar */
+.time-tracker-bar {
+  position: relative;
+  width: 100%;
+}
+
+/* The background “track” for the fill */
+.time-track {
+  background: #ecf0f1;
+  border-radius: 6px;
+  height: 15px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+/* The fill representing remaining time; animates from 0 to 70% width */
+.time-fill {
+  background: #d73535;
+  height: 100%;
+  width: 0;
+  animation: fillBart 2s forwards;
+  transition: background 0.5s ease;
+}
+.time-fill2 {
+  background: #d73535;
+  height: 100%;
+  width: 0;
+  animation: fillBart2 2s forwards;
+  transition: background 0.5s ease;
+}
+.time-fill3 {
+  background: #d73535;
+  height: 100%;
+  width: 0;
+  animation: fillBart3 2s forwards;
+  transition: background 0.5s ease;
+}
+.time-fill4 {
+  background: #d73535;
+  height: 100%;
+  width: 0;
+  animation: fillBart4 2s forwards;
+  transition: background 0.5s ease;
+}
+/* On hover, the fill’s background changes to a vibrant gradient */
+.time-tracker-bar:hover .time-fill {
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+}
+
+/* Centered text on the bar displaying the time left */
+.time-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  font-weight: bold;
+  color: #fbfbfb;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  pointer-events: none;
+}
+
+/* Additional time details below the bar */
+.time-details {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+}
+@keyframes fillBart4 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 92%;
+  }
+}  .switch-dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .switch-dashboard:hover {
+            background-color: #e84118;
+            transform: scale(1.05);
+        }
+/* Animation keyframes to animate the fill from 0 to 70% */
+@keyframes fillBart {
+  from {
+    width: 0;
+  }
+  to {
+    width: 85%;
+  }
+}
+@keyframes fillBart2 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 55%;
+  }
+}
+@keyframes fillBart3 {
+  from {
+    width: 0;
+  }
+  to {
+    width: 95%;
+  }
+}
+
+      /* Modal styles */
+      .modal {
+        display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
+      align-items: center;
+      justify-content: center;
+    overflow-y: auto;
+    }
+    .modal-content {
+      background: #2e2e3d;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      padding: 20px 30px;
+      border-radius: 12px;
+      width: 500px;
+      margin: 10% auto;
+      position: relative;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+    .modal-content label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #555;
+      border-radius: 3px;
+      background: #3e3e4d;
+      color: #fff;
+    }
+    .modal-content .save-btn {
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 3px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .service-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .service-field {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .service-field label {
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    .service-field input {
+      padding: 8px;
+      border: 1px solid #555;
+      border-radius: 3px;
+      background: #3e3e4d;
+      color: #fff;
+    }
+    .add-service-btn {
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Use "sidebar-collapsed" for collapsed mode; "sidebar-extended" will be used later -->
+  <!-- Use "sidebar-collapsed" for collapsed mode -->
+  <div class="sidebar sidebar-collapsed" id="collapsedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggle">
+          <i class="fas fa-bars"></i>
+          <span class="tooltip">Menu</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span class="tooltip">Admin</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span class="tooltip">Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="tooltip">Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span class="tooltip">Projects</span>
+        </button>
+      </li>
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span class="tooltip">Clients</span>
+        </button>
+      </li>
+      
+      <!-- CRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-database"></i>
+          <span class="tooltip">CRM</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span class="tooltip">Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span class="tooltip">Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span class="tooltip">Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span class="tooltip">Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-sack-dollar"></i>
+          <span class="tooltip">Finance</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span class="tooltip">Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span class="tooltip">Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span class="tooltip">Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span class="tooltip">Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-users"></i>
+          <span class="tooltip">HRM</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span class="tooltip">Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span class="tooltip">Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span class="tooltip">Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-file-invoice"></i>
+          <span class="tooltip">Invoices</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span class="tooltip">Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span class="tooltip">Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span class="tooltip">Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  
+
+
+
+
+
+
+
+    <!-- Expanded Sidebar (hidden by default) -->
+   <!-- Expanded Sidebar (hidden by default) -->
+  <div class="sidebar sidebar-extended" id="expandedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggleExtended">
+          <i class="fas fa-bars"></i>
+          <span></span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span>Admin Panel</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span>Manage Projects</span>
+        </button>
+      </li>
+     
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span>Client Database</span>
+        </button>
+      </li>
+       <!-- CRM Section with submenu -->
+       <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-database"></i>
+          <span>CRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span>Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span>Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span>Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span>Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-sack-dollar"></i>
+          <span>Finance</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span>Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span>Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-users"></i>
+          <span>HRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span>Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span>Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span>Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-file-invoice"></i>
+          <span>Invoices</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span>Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span>Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span>Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <button class="switch-dashboard" onclick="window.location.href='index.html'">Switch Dashboard</button>
+  <div class="main-content">
+    <div class="header-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div style="color: white;">MZ Media</div>
+            <div class="icons">
+                <i class="fas fa-edit"></i>
+                <i class="fa-solid fa-calculator"></i>
+                <i class="fas fa-palette"></i>
+                <i class="fa-regular fa-message"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        
+        <!-- Bottom Header -->
+        <div class="bottom-header">
+            <div class="barber-profile">
+               <!--<div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="logo">
+                </div>
+                <i class="fas fa-user-circle"></i>--> 
+                <h1>delivery invoices</h1>
+            </div>
+            
+            <div class="header-actions">
+         
+            
+            </div>
+        </div>
+    </div>
+    <div style="margin-top: 40px;" id="contents">
+        <table>
+          <thead>
+            <tr>
+              <th>Order No</th>
+              <th>Deadline</th>
+              <th>Client</th>
+              <th>Origin</th>
+              <th>Services</th>
+              <th>Total</th>
+              <th>Paid</th>
+              <th>Due</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row 1 -->
+            <tr>
+              <td>001</td>
+              <td>2025-07-01</td>
+              <td>Alice Johnson</td>
+              <td>US</td>
+              <td>
+                <!-- 3 different services; 5 total requests (1 + 2 + 2) -->
+                <button class="invoice-button" onclick="openModal('modal-1')">3*5</button>
+              </td>
+              <td>$2500</td>
+              <td>
+                <button class="invoice-buton" onclick="openModal('paymentModal-1')">$1500</button>
+              </td>
+              <td>$1000</td>
+              <td>
+                <button class="invoice-button">Send Invoice</button>
+              </td>
+            </tr>
+            <!-- Row 2 -->
+            <tr>
+              <td>002</td>
+              <td>2025-07-05</td>
+              <td>Bob Smith</td>
+              <td>UK</td>
+              <td>
+                <!-- 2 different services; 3 total requests (1 + 2) -->
+                <button class="invoice-button" onclick="openModal('modal-2')">2*3</button>
+              </td>
+              <td>$1800</td>
+              <td>
+                <button class="invoice-buton" onclick="openModal('paymentModal-2')">$1200</button>
+              </td>
+              <td>$600</td>
+              <td>
+                <button class="invoice-button">Send Invoice</button>
+              </td>
+            </tr>
+            <!-- Row 3 -->
+            <tr>
+              <td>003</td>
+              <td>2025-07-10</td>
+              <td>Charlie Brown</td>
+              <td>Canada</td>
+              <td>
+                <!-- 1 service only -->
+                <button class="invoice-button" onclick="openModal('modal-3')">1*1</button>
+              </td>
+              <td>$800</td>
+              <td>
+                <button class="invoice-buton" onclick="openModal('paymentModal-3')">$800</button>
+              </td>
+              <td>$0</td>
+              <td>
+                <button class="invoice-button">Send Invoice</button>
+              </td>
+            </tr>
+            <!-- Row 4 -->
+            <tr>
+              <td>004</td>
+              <td>2025-07-15</td>
+              <td>Diana Prince</td>
+              <td>Australia</td>
+              <td>
+                <!-- 3 different services; 6 total requests (1 + 3 + 2) -->
+                <button class="invoice-button" onclick="openModal('modal-4')">3*6</button>
+              </td>
+              <td>$3200</td>
+              <td>
+                <button class="invoice-buton" onclick="openModal('paymentModal-4')">$2000</button>
+              </td>
+              <td>$1200</td>
+              <td>
+                <button class="invoice-button">Send Invoice</button>
+              </td>
+            </tr>
+            <!-- Row 5 -->
+            <tr>
+              <td>005</td>
+              <td>2025-07-20</td>
+              <td>Evan Black</td>
+              <td>Germany</td>
+              <td>
+                <!-- 2 different services; 4 total requests (1 + 3) -->
+                <button class="invoice-button" onclick="openModal('modal-5')">2*4</button>
+              </td>
+              <td>$2100</td>
+              <td>
+                <button class="invoice-buton" onclick="openModal('paymentModal-5')">$1100</button>
+              </td>
+              <td>$1000</td>
+              <td>
+                <button class="invoice-button">Send Invoice</button>
+              </td>
+            </tr>
+            <!-- Row 6 -->
+            <tr>
+              <td>006</td>
+              <td>2025-07-25</td>
+              <td>Fiona Gallagher</td>
+              <td>Ireland</td>
+              <td>
+                <!-- 3 different services; 7 total requests (2 + 3 + 2) -->
+                <button class="invoice-button" onclick="openModal('modal-6')">3*7</button>
+              </td>
+              <td>$4500</td>
+              <td>
+                <button class="invoice-buton" onclick="openModal('paymentModal-6')">$3000</button>
+              </td>
+              <td>$1500</td>
+              <td>
+                <button class="invoice-button">Send Invoice</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+       <!-- Payment Modal for Row 1: Alice Johnson -->
+  <div id="paymentModal-1" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal-1')">&times;</span>
+      <h2>Payment Details - Alice Johnson</h2>
+      <button class="invoice-button">Add New</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-01-15</td>
+            <td>Credit Card</td>
+            <td>$1500</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payment Modal for Row 2: Bob Smith -->
+  <div id="paymentModal-2" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal-2')">&times;</span>
+      <h2>Payment Details - Bob Smith</h2>
+      <button class="invoice-button">Add New</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-02-10</td>
+            <td>Bank Transfer</td>
+            <td>$1200</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payment Modal for Row 3: Charlie Brown -->
+  <div id="paymentModal-3" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal-3')">&times;</span>
+      <h2>Payment Details - Charlie Brown</h2>
+      <button class="invoice-button">Add New</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-03-05</td>
+            <td>PayPal</td>
+            <td>$800</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payment Modal for Row 4: Diana Prince -->
+  <div id="paymentModal-4" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal-4')">&times;</span>
+      <h2>Payment Details - Diana Prince</h2>
+      <button class="invoice-button">Add New</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-04-12</td>
+            <td>Credit Card</td>
+            <td>$2000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payment Modal for Row 5: Evan Black -->
+  <div id="paymentModal-5" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal-5')">&times;</span>
+      <h2>Payment Details - Evan Black</h2>
+      <button class="invoice-button">Add New</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-05-20</td>
+            <td>Cash</td>
+            <td>$1100</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Payment Modal for Row 6: Fiona Gallagher -->
+  <div id="paymentModal-6" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('paymentModal-6')">&times;</span>
+      <h2>Payment Details - Fiona Gallagher</h2>
+      <button class="invoice-button">Add New</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Method</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2025-06-18</td>
+            <td>Bank Transfer</td>
+            <td>$3000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+      <!-- Modal for Row 1: Alice Johnson -->
+      <div id="modal-1" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('modal-1')">&times;</span>
+          <h2>Services Details - Alice Johnson</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qnty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long Form Video</td>
+                <td>1</td>
+                <td>$1500</td>
+                <td>$1500</td>
+              </tr>
+              <tr>
+                <td>Short Form Video</td>
+                <td>2</td>
+                <td>$300</td>
+                <td>$600</td>
+              </tr>
+              <tr>
+                <td>Thumbnail Design</td>
+                <td>2</td>
+                <td>$200</td>
+                <td>$400</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Modal for Row 2: Bob Smith -->
+      <div id="modal-2" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('modal-2')">&times;</span>
+          <h2>Services Details - Bob Smith</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qnty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long Form Video</td>
+                <td>1</td>
+                <td>$1500</td>
+                <td>$1500</td>
+              </tr>
+              <tr>
+                <td>Short Form Video</td>
+                <td>2</td>
+                <td>$150</td>
+                <td>$300</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal" id="addModal">
+        <div class="modal-content">
+          <span class="close" onclick="closeAddModal()">&times;</span>
+          <h2>Add New Receipt</h2>
+          <form id="quoteForm">
+            <label for="clientName">Client Name</label>
+            <input type="text" id="clientName" name="clientName" placeholder="Enter client name" required>
+    
+            <label for="origin">Origin</label>
+            <input type="text" id="origin" name="origin" placeholder="Enter origin (e.g., US, UK)" required>
+    
+            <!-- Service Entries Section -->
+            <div id="servicesContainer">
+              <div class="service-row">
+                <div class="service-field">
+                  <label for="serviceName0">Service Name</label>
+                  <input type="text" id="serviceName0" name="serviceName[]" placeholder="Enter service name" required>
+                </div>
+                <div class="service-field">
+                  <label for="qnty0">Quantity</label>
+                  <input type="number" id="qnty0" name="qnty[]" placeholder="Enter quantity" required>
+                </div>
+                <div class="service-field">
+                  <label for="price0">Price per Service</label>
+                  <input type="number" id="price0" name="price[]" placeholder="Enter price" required>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-service-btn" onclick="addServiceRow()">Add More Service</button>
+            <button type="submit" class="save-btn">Save</button>
+          </form>
+        </div>
+      </div>
+    
+      <!-- Modal for Row 3: Charlie Brown -->
+      <div id="modal-3" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('modal-3')">&times;</span>
+          <h2>Services Details - Charlie Brown</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qnty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Thumbnail Design</td>
+                <td>1</td>
+                <td>$800</td>
+                <td>$800</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Modal for Row 4: Diana Prince -->
+      <div id="modal-4" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('modal-4')">&times;</span>
+          <h2>Services Details - Diana Prince</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qnty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long Form Video</td>
+                <td>1</td>
+                <td>$2000</td>
+                <td>$2000</td>
+              </tr>
+              <tr>
+                <td>Short Form Video</td>
+                <td>3</td>
+                <td>$300</td>
+                <td>$900</td>
+              </tr>
+              <tr>
+                <td>Thumbnail Design</td>
+                <td>2</td>
+                <td>$150</td>
+                <td>$300</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Modal for Row 5: Evan Black -->
+      <div id="modal-5" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('modal-5')">&times;</span>
+          <h2>Services Details - Evan Black</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qnty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long Form Video</td>
+                <td>1</td>
+                <td>$1800</td>
+                <td>$1800</td>
+              </tr>
+              <tr>
+                <td>Thumbnail Design</td>
+                <td>3</td>
+                <td>$100</td>
+                <td>$300</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Modal for Row 6: Fiona Gallagher -->
+      <div id="modal-6" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeModal('modal-6')">&times;</span>
+          <h2>Services Details - Fiona Gallagher</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Qnty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Long Form Video</td>
+                <td>2</td>
+                <td>$2000</td>
+                <td>$4000</td>
+              </tr>
+              <tr>
+                <td>Short Form Video</td>
+                <td>3</td>
+                <td>$100</td>
+                <td>$300</td>
+              </tr>
+              <tr>
+                <td>Thumbnail Design</td>
+                <td>2</td>
+                <td>$100</td>
+                <td>$200</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+  
+   
+</div>
+  
+  <script>
+       function openAddModal() {
+      document.getElementById("addModal").style.display = "flex";
+    }
+    // Function to close the Add Modal
+    function closeAddModal() {
+      document.getElementById("addModal").style.display = "none";
+    }
+    // Close the modal if the user clicks outside the modal content
+    window.onclick = function(event) {
+      var addModal = document.getElementById("addModal");
+      if (event.target === addModal) {
+        closeAddModal();
+      }
+    }
+
+    // Track the service row index for unique IDs
+    let serviceIndex = 1;
+    function addServiceRow() {
+      const container = document.getElementById("servicesContainer");
+      const newRow = document.createElement("div");
+      newRow.classList.add("service-row");
+      newRow.innerHTML = `
+        <label for="serviceName${serviceIndex}">Service Name</label>
+        <input type="text" id="serviceName${serviceIndex}" name="serviceName[]" placeholder="Enter service name" required>
+
+        <label for="qnty${serviceIndex}">Quantity</label>
+        <input type="number" id="qnty${serviceIndex}" name="qnty[]" placeholder="Enter quantity" required>
+
+        <label for="price${serviceIndex}">Price per Service</label>
+        <input type="number" id="price${serviceIndex}" name="price[]" placeholder="Enter price" required>
+      `;
+      container.appendChild(newRow);
+      serviceIndex++;
+    }
+    // Get references to elements.
+    const collapsedSidebar = document.getElementById('collapsedSidebar');
+    const expandedSidebar = document.getElementById('expandedSidebar');
+    const mainContent = document.querySelector('.main-content');
+  
+    // Set initial positions (if not already set via CSS)
+    // Expanded sidebar starts off-screen to the left.
+    expandedSidebar.style.left = '-220px';
+    // Main content margin is set as in collapsed mode.
+    mainContent.style.marginLeft = '60px';
+  
+    // Helper function: animate a numeric CSS property.
+    // element: the DOM element.
+    // property: CSS property name (in camelCase) to animate (e.g. 'left' or 'marginLeft').
+    // start: starting numeric value.
+    // end: ending numeric value.
+    // duration: total duration of the animation (ms).
+    // unit: string unit (e.g., 'px').
+    // callback: function to call when animation completes.
+    function animateProperty(element, property, start, end, duration, unit, callback) {
+      const startTime = performance.now();
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Using linear easing; adjust if desired.
+        const value = start + (end - start) * progress;
+        element.style[property] = value + unit;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+  
+    // Function to show the expanded sidebar with slide-in effect.
+    function showExpandedSidebar() {
+      // Display the expanded sidebar.
+      expandedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from -220px to 0 over 200ms.
+      animateProperty(expandedSidebar, 'left', -220, 0, 200, 'px');
+  
+      // Animate main content margin from 60px to 220px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 60, 220, 200, 'px');
+  
+      // After the animation, hide the collapsed sidebar.
+      setTimeout(() => {
+        collapsedSidebar.style.display = 'none';
+      }, 5);
+    }
+  
+    // Function to hide the expanded sidebar with slide-out effect.
+    function hideExpandedSidebar() {
+      // Show the collapsed sidebar before animation.
+      collapsedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from 0 to -220px over 200ms.
+      animateProperty(expandedSidebar, 'left', 0, -220, 200, 'px', () => {
+        expandedSidebar.style.display = 'none';
+      });
+  
+      // Animate main content margin from 220px to 60px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 220, 60, 200, 'px');
+    }
+  
+    // Attach event listeners.
+    // When clicking the menu button on the collapsed sidebar.
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      showExpandedSidebar();
+    });
+  
+    // When clicking the menu button on the expanded sidebar.
+    document.getElementById('menuToggleExtended').addEventListener('click', () => {
+      hideExpandedSidebar();
+    });
+  
+    // Function to toggle submenu items in the extended sidebar.
+    // This function closes any other open submenu before toggling the selected one.
+    function toggleSubmenu(button) {
+      const parentLi = button.parentElement;
+      const openSubmenus = document.querySelectorAll('.sidebar-extended .has-submenu.active');
+      openSubmenus.forEach((submenu) => {
+        if (submenu !== parentLi) {
+          submenu.classList.remove('active');
+        }
+      });
+      parentLi.classList.toggle('active');
+    }
+    function openModal(id) {
+      document.getElementById(id).style.display = "block";
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+    // Close modal if clicked outside modal content
+    window.onclick = function(event) {
+      var modals = document.getElementsByClassName('modal');
+      for (var i = 0; i < modals.length; i++) {
+        if (event.target == modals[i]) {
+          modals[i].style.display = "none";
+        }
+      }
+    }
+ 
+  </script>
+  
+  
+</body>
+</html>

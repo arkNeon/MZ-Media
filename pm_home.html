@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
+  <title>Homepage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background-color: #1e1e2d;
+      color: #fff;
+    }
+    
+    /* Extended mode (to be implemented later) */
+       /* ------------------------------
+       Expanded Mode Sidebar
+       ------------------------------ */
+       .sidebar-extended {
+      width: 220px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow-y: auto;
+      display: none;  /* initially hidden */
+      transition: transform 0.3s ease;
+      padding-top: 5px;
+    }
+    
+    .sidebar-extended .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-extended .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-extended .menu li {
+      position: relative;
+    }
+    
+    /* Buttons in extended mode show both icon and text */
+    .sidebar-extended button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .sidebar-extended button:hover {
+      background-color: #252525;
+    }
+    
+    .sidebar-extended button i {
+      min-width: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+    
+    /* The text label appears in a <span> and is left-aligned */
+    .sidebar-extended button span {
+      margin-left: 10px;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+    
+    /* Dropdown toggle buttons: text on left, chevron on right */
+    .sidebar-extended li.has-submenu > button {
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Make the text label take available space */
+    .sidebar-extended li.has-submenu > button span {
+      flex: 1;
+      text-align: left;
+      
+    }
+    
+    /* The chevron icon stays on the right */
+    .sidebar-extended li.has-submenu > button > i:last-child {
+      margin-left: auto;
+      
+    }
+    
+    /* Submenu container in extended mode */
+    .sidebar-extended li.has-submenu .submenu {
+      list-style: none;
+      padding-left: 10px;
+      display: none;
+      flex-direction: column;
+      position: relative;
+      
+      /* A vertical line on the left side of the submenu list */
+      border-left: 1px solid #fff;
+      margin-left: 25px;
+    }
+    
+    .sidebar-extended li.has-submenu.active .submenu {
+      display: flex;
+    }
+    
+    /* Tree branch for each submenu item: a small horizontal line */
+    .sidebar-extended .submenu li {
+      position: relative;
+      padding-left: 0px;
+     
+    }
+    .sidebar-extended .menu > li {
+  margin-bottom: 15.2px;
+}
+
+    .sidebar-extended .submenu li::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      width: 10px;
+      border-top: 1px solid #fff;
+      transform: translateY(-50%);
+    }
+    .sidebar-extended li.has-submenu.active > button i.fa-chevron-down {
+  transform: rotate(180deg);
+}
+.sidebar-extended .submenu li button {
+      padding: 8px 10px;    /* Smaller padding than main buttons */
+      font-size: 14px;      /* Smaller overall font size */
+    }
+    
+    .sidebar-extended .submenu li button i {
+      font-size: 16px;      /* Smaller icon size */
+      min-width: 24px;      /* Adjust if necessary */
+    }
+    
+    .sidebar-extended .submenu li button span {
+      font-size: 14px;      /* Smaller text size */
+      margin-left: 8px;     /* Adjust spacing if needed */
+    }
+    
+    /* When expanded sidebar is visible, shift main content */
+    .sidebar-extended.active ~ .main-content {
+      margin-left: 220px;
+    }
+
+    
+    /* Collapsed mode */
+    .sidebar-collapsed {
+      width: 60px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow: visible;
+    }
+    
+    .sidebar-collapsed .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-collapsed .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-collapsed .menu li {
+      position: relative;
+    }
+    .sidebar-collapsed button i {
+     
+      font-size: 18px;
+    }
+    /* All buttons: only icons are visible */
+    .sidebar-collapsed button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    /* Hide inner text and dropdown icons except tooltip */
+    .sidebar-collapsed button span:not(.tooltip),
+    .sidebar-collapsed button .dropdown-icon {
+      display: none;
+    }
+    
+    /* Standard menu items without submenu */
+    .sidebar-collapsed .menu li:not(.has-submenu) > button {
+      width: 60px;
+      height: 54px;
+    }
+    
+    /* For submenu items, use a flex container with no gap */
+    .sidebar-collapsed .menu li.has-submenu {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px 0 0 10px;
+      overflow: visible;
+      font-size: 14px; /* Restore icon font size */
+      transition: background-color 0.3s ease;
+    }
+    
+    /* The main button remains fixed at 60px */
+    .sidebar-collapsed .menu li.has-submenu > button {
+      width: 60px;
+      height: 54px;
+      flex-shrink: 0;
+      
+    }
+    
+    /* The submenu container sits directly beside the main button */
+    .sidebar-collapsed .menu li.has-submenu .submenu {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+     
+    }
+    
+    /* On hover, set a unified background and slide out the submenu */
+    .sidebar-collapsed .menu li.has-submenu:hover {
+      background-color: #252525;
+    
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu:hover .submenu {
+      transform: scaleX(1);
+      background-color: #252525;
+      border-radius: 0 10px 10px 0;
+    
+    }
+    
+    /* Submenu item buttons – no extra margins */
+    .sidebar-collapsed .menu li.has-submenu .submenu li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button {
+      width: 40px;
+      height: 54px;
+      background: none;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      font-size: 14px !important;
+    }
+    /* Scale up the submenu icon on hover */
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button:hover i {
+      transform: scale(1.2);
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      transition: transform 0.3s ease;
+    }
+    
+    /* Tooltip styling */
+    /* Tooltip styling for all buttons (main and submenu) */
+    .sidebar-collapsed .menu li > button .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #575757;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 10;
+    }
+    
+    .sidebar-collapsed .menu li > button:hover .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    .main-content {
+            margin-left: 60px;
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.05s;
+         
+        }
+
+       
+    .header-container {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #3a3f5c, #3a3f5c);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin: -20px!important;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 20px;
+            border-bottom: 1px solid #ffffff;
+            color: #f9f9f9;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .top-header .icons {
+            display: flex;
+            gap: 25px;
+        }
+
+        .top-header i {
+            font-size: 18px;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+        }
+        .top-header i:hover {
+            
+            color: #fefefe;
+            scale: 1.1;
+        }
+        /* Bottom Header */
+        .bottom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .barber-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+.barber-profile i {
+    font-size: 30px;
+    color: #dcdcdc;
+}
+
+        .barber-profile h1 {
+            margin: 0;
+            font-size: 17px;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .header-actions button {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    padding: 5px 10px;
+    border: 1px solid gray; /* Gray border */
+    background: transparent; /* Transparent background */
+    color: white;
+    cursor: pointer;
+    border-radius: 12px; /* 12px border radius */
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.header-actions button i {
+    font-size: 16px;
+}
+
+/* Hover Effect */
+.header-actions button:hover {
+  background: #6c5ce7;
+    color: white;
+}
+ /* Active state for filter buttons (always showing hover effect) */
+ .header-actions button.active {
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+      color: white;
+    }
+        .report-btn { background: #007bff; color: white; }
+
+        .logo-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .logo {
+            height: 25px;
+        }
+        /* Summary Cards */
+       
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            text-align: left;
+        }
+
+        th {
+            background: #444;
+        }
+        .switch-dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .switch-dashboard:hover {
+            background-color: #e84118;
+            transform: scale(1.05);
+        }
+        .plus-btn, .equal-btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .plus-btn { background: #28a745; color: white; }
+        .equal-btn { background: #007bff; color: white; }
+       
+        .container {
+      display: flex;
+      height: 100vh;
+      margin-top: 20px;
+    }
+    /* Left: charts (80% width) */
+    .charts {
+      width: 80%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    /* Right: blocks (20% width) */
+    .blocks {
+      width: 20%;
+      padding: 20px;
+      box-sizing: border-box;
+    
+      
+    }
+    
+#chart-section {
+      width: 100%;
+      height: 400px;
+      display: flex;
+      background: #2e2e42;
+      box-sizing: border-box;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    /* Common container styling for each section */
+    .chart-container {
+      padding: 10px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    /* Column Chart Container: 50% width */
+    .column-chart {
+      width: 70%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    /* Doughnut Chart Container: 30% width */
+    .doughnut-chart {
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px; /* extra padding for doughnut */
+    }
+    /* Chart container style */
+ 
+    /* Block/card styling */
+    .block {
+      background: #2a2a3d;
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    .block h3 {
+      margin: 0;
+      margin-bottom: 10px;
+      font-size: 16px;
+
+      padding-bottom: 5px;
+    }
+    .block .value {
+      font-size: 19px;
+      font-weight: bold;
+    }
+    .block:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    /* Different colors for each value */
+    .cash { color: #4CAF50; }       /* green */
+    .receivables { color: #FFC107; } /* amber */
+    .equipments { color: #2196F3; }   /* blue */
+    .payables { color: #F44336; }     /* red */
+    .moc { color: #FF9800; }          /* orange */
+    .cashflow { color: #00BCD4; }     /* cyan */
+    .valuation { color: #9C27B0; }     /* purple */
+    .pro { color: #b6d42e; }     /* purple */
+  </style>
+</head>
+<body>
+  <!-- Use "sidebar-collapsed" for collapsed mode; "sidebar-extended" will be used later -->
+  <!-- Use "sidebar-collapsed" for collapsed mode -->
+  <div class="sidebar sidebar-collapsed" id="collapsedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggle">
+          <i class="fas fa-bars"></i>
+          <span class="tooltip">Menu</span>
+        </button>
+      </li>
+    
+      <li>
+        <button onclick="window.location.href='pm_home.html'">
+          <i class="fas fa-home"></i>
+          <span class="tooltip">Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='pm_assigned.html'">
+          <i class="fas fa-user-check"></i>
+          <span class="tooltip">Assigned</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='pm_projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span class="tooltip">Projects</span>
+        </button>
+      </li>
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='pm_review.html'">
+          <i class="fa fa-search"></i>
+          <span class="tooltip">Review</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='pm_comp.html'">
+          <i class="fas fa-hand-holding-usd"></i>
+          <span class="tooltip">Compensation</span>
+        </button>
+      </li>
+   
+      
+      
+    </ul>
+  </div>
+  
+
+
+
+
+
+
+
+    <!-- Expanded Sidebar (hidden by default) -->
+   <!-- Expanded Sidebar (hidden by default) -->
+  <div class="sidebar sidebar-extended" id="expandedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggleExtended">
+          <i class="fas fa-bars"></i>
+          <span></span>
+        </button>
+      </li>
+
+      <li>
+        <button onclick="window.location.href='pm_home.html'">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='pm_assigned.html'">
+          <i class="fas fa-user-check"></i>
+          <span>Assigned to Me</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='pm_projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span>Manage Projects</span>
+        </button>
+      </li>
+     
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='pm_review.html'">
+          <i class="fa fa-search"></i>
+          <span>Under Review</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='pm_comp.html'">
+          <i class="fas fa-hand-holding-usd"></i>
+          <span>Compensation</span>
+        </button>
+      </li> 
+    </ul>
+  </div>
+
+
+
+
+  <button class="switch-dashboard" onclick="window.location.href='index.html'">Switch Dashboard</button>
+
+    <!-- Expanded Sidebar (hidden by default) -->
+   <!-- Expanded Sidebar (hidden by default) -->
+  <div class="sidebar sidebar-extended" id="expandedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggleExtended">
+          <i class="fas fa-bars"></i>
+          <span></span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span>Admin Panel</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span>Manage Projects</span>
+        </button>
+      </li>
+     
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span>Client Database</span>
+        </button>
+      </li>
+       <!-- CRM Section with submenu -->
+       <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-database"></i>
+          <span>CRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span>Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span>Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span>Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span>Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-sack-dollar"></i>
+          <span>Finance</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span>Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span>Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-users"></i>
+          <span>HRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span>Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span>Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span>Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-file-invoice"></i>
+          <span>Invoices</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span>Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span>Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span>Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="main-content">
+    <div class="header-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div style="color: white;">MZ Media</div>
+            <div class="icons">
+                <i class="fas fa-edit"></i>
+                <i class="fa-solid fa-calculator"></i>
+                <i class="fas fa-palette"></i>
+                <i class="fa-regular fa-message"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        
+        <!-- Bottom Header -->
+        <div class="bottom-header">
+            <div class="barber-profile">
+               <!--<div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="logo">
+                </div>
+                <i class="fas fa-user-circle"></i>--> 
+                <h1>homepage</h1>
+            </div>
+            
+            <div class="header-actions">
+            
+            
+            </div>
+        </div>
+    </div>
+    
+ 
+    <div class="container">
+        <!-- Left Side: Charts -->
+        <div class="charts">
+        
+          <div class="cards-container projects active">
+            <section id="chart-section">
+              <!-- Column Chart Container (50% width) -->
+              <div class="chart-container column-chart">
+                <canvas id="lineChart"></canvas>
+              </div>
+              <!-- Doughnut Chart Container (30% width) -->
+              <div class="chart-container doughnut-chart">
+                <canvas id="doughnutChart1"></canvas>
+              </div>
+              <!-- Blocks Section (20% width) -->
+          
+            </section>
+            <section id="chart-section">
+              <!-- Column Chart Container (50% width) -->
+              <div class="chart-container column-chart">
+                <canvas id="columnChart"></canvas>
+              </div>
+              <!-- Doughnut Chart Container (30% width) -->
+              <div class="chart-container doughnut-chart">
+                <canvas id="doughnutChart2"></canvas>
+              </div>
+              <!-- Blocks Section (20% width) -->
+
+            </section>
+        </div>
+      </div>
+        <!-- Right Side: Separate Blocks -->
+        <div class="blocks">
+          <div class="block">
+            <h3>Salary Received</h3>
+            <div class="value cash">$500</div>
+          </div>
+          <div class="block">
+            <h3>Compensation Received</h3>
+            <div class="value receivables">$2,500</div>
+          </div>
+          <div class="block">
+            <h3>On Time Completion</h3>
+            <div class="value equipments">8/10</div>
+          </div>
+          <div class="block">
+            <h3>Adjustment Rate</h3>
+            <div class="value payables">High</div>
+          </div>
+          <div class="block">
+            <h3>Communication</h3>
+            <div class="value moc">7/10</div>
+          </div>
+          <div class="block">
+            <h3>Independent Initiative</h3>
+            <div class="value cashflow">6/10</div>
+          </div>
+          <div class="block">
+            <h3>Judgement</h3>
+            <div class="value valuation">8/10</div>
+          </div>
+          <div class="block">
+            <h3>Productivity Level</h3>
+            <div class="value pro">85%</div>
+          </div>
+        </div>
+      </div>
+  
+</div>
+  
+  <script>
+
+    // Chart 2: Project Completion vs. Deadline Left
+    const ctxLine = document.getElementById('lineChart').getContext('2d');
+    const labelsLine = ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5', 'Project 6', 'Project 7', 'Project 8'];
+    const projectCompletionData = [70, 50, 30, 80, 90, 60, 40, 100];
+    const deadlineLeftData = [20, 40, 50, 10, 5, 30, 45, 0];
+
+    new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels: labelsLine,
+        datasets: [
+          {
+            label: 'Project Completion (%)',
+            data: projectCompletionData,
+            borderColor: '#4CAF50',
+            backgroundColor: 'rgba(76, 175, 80, 0.2)',
+            fill: false,
+            tension: 0.1
+          },
+          {
+            label: 'Deadline Left (%)',
+            data: deadlineLeftData,
+            borderColor: '#2196F3',
+            backgroundColor: 'rgba(33, 150, 243, 0.2)',
+            fill: false,
+            tension: 0.1
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          },
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: { display: true, text: 'Percentage', color: '#fff' },
+            ticks: { color: '#fff' },
+            grid: { color: 'rgba(255,255,255,0.1)' }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Chart 3: Workload Column Chart
+const ctxLine1 = document.getElementById('columnChart').getContext('2d');
+new Chart(ctxLine1, {
+  type: 'line',
+  data: {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    datasets: [{
+      label: 'Compensation ($)',
+      data: [150, 250, 350, 450, 550, 400], // Sample compensation values within the $150-$550 range
+      borderColor: '#8BC34A',
+      backgroundColor: function(context) {
+        const chart = context.chart;
+        const { ctx, chartArea } = chart;
+        if (!chartArea) {
+          return '#8BC34A';
+        }
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient.addColorStop(0, "rgba(0, 230, 118, 0.8)");
+        gradient.addColorStop(1, "#8BC34A");
+        return gradient;
+      },
+      fill: false,    // Set to true if you want a filled area under the line
+      tension: 0.3,   // Smoothes the line curve
+      pointRadius: 5, // Size of the data points
+      pointBackgroundColor: '#F44336',
+      pointBorderColor: '#fff',
+      borderWidth: 2
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#fff' } }
+    },
+    scales: {
+      x: { 
+        ticks: { color: '#fff' }, 
+        grid: { color: 'rgba(255,255,255,0.1)' } 
+      },
+      y: { 
+        beginAtZero: false,
+        min: 150,
+        max: 550,
+        ticks: { 
+          color: '#fff',
+          callback: function(value) { return '$' + value; }
+        },
+        grid: { color: 'rgba(255,255,255,0.1)' } 
+      }
+    }
+  }
+});
+
+
+    // Get references to elements.
+    const collapsedSidebar = document.getElementById('collapsedSidebar');
+    const expandedSidebar = document.getElementById('expandedSidebar');
+    const mainContent = document.querySelector('.main-content');
+  
+    // Set initial positions (if not already set via CSS)
+    // Expanded sidebar starts off-screen to the left.
+    expandedSidebar.style.left = '-220px';
+    // Main content margin is set as in collapsed mode.
+    mainContent.style.marginLeft = '60px';
+  
+    // Helper function: animate a numeric CSS property.
+    // element: the DOM element.
+    // property: CSS property name (in camelCase) to animate (e.g. 'left' or 'marginLeft').
+    // start: starting numeric value.
+    // end: ending numeric value.
+    // duration: total duration of the animation (ms).
+    // unit: string unit (e.g., 'px').
+    // callback: function to call when animation completes.
+    function animateProperty(element, property, start, end, duration, unit, callback) {
+      const startTime = performance.now();
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Using linear easing; adjust if desired.
+        const value = start + (end - start) * progress;
+        element.style[property] = value + unit;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+  
+    // Function to show the expanded sidebar with slide-in effect.
+    function showExpandedSidebar() {
+      // Display the expanded sidebar.
+      expandedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from -220px to 0 over 200ms.
+      animateProperty(expandedSidebar, 'left', -220, 0, 200, 'px');
+  
+      // Animate main content margin from 60px to 220px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 60, 220, 200, 'px');
+  
+      // After the animation, hide the collapsed sidebar.
+      setTimeout(() => {
+        collapsedSidebar.style.display = 'none';
+      }, 5);
+    }
+  
+    // Function to hide the expanded sidebar with slide-out effect.
+    function hideExpandedSidebar() {
+      // Show the collapsed sidebar before animation.
+      collapsedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from 0 to -220px over 200ms.
+      animateProperty(expandedSidebar, 'left', 0, -220, 200, 'px', () => {
+        expandedSidebar.style.display = 'none';
+      });
+  
+      // Animate main content margin from 220px to 60px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 220, 60, 200, 'px');
+    }
+  
+    // Attach event listeners.
+    // When clicking the menu button on the collapsed sidebar.
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      showExpandedSidebar();
+    });
+  
+    // When clicking the menu button on the expanded sidebar.
+    document.getElementById('menuToggleExtended').addEventListener('click', () => {
+      hideExpandedSidebar();
+    });
+  
+    // Function to toggle submenu items in the extended sidebar.
+    // This function closes any other open submenu before toggling the selected one.
+    function toggleSubmenu(button) {
+      const parentLi = button.parentElement;
+      const openSubmenus = document.querySelectorAll('.sidebar-extended .has-submenu.active');
+      openSubmenus.forEach((submenu) => {
+        if (submenu !== parentLi) {
+          submenu.classList.remove('active');
+        }
+      });
+      parentLi.classList.toggle('active');
+    }
+   // Doughnut Chart for Orders Data
+ 
+    const ctxDoughnut1 = document.getElementById('doughnutChart1').getContext('2d');
+    const doughnutChart1 = new Chart(ctxDoughnut1, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Under-review', 'Ongoing'],
+        datasets: [{
+          data: [3, 4, 14],
+          backgroundColor: [
+            'rgba(0, 230, 118, 0.8)',   // Assigned Orders: custom vibrant green
+            'rgba(255, 238, 88, 0.8)',    // Completed Orders: yellow
+            '#2196F3'    // Unassigned Orders: red
+            
+          ],
+          borderColor: [
+            'rgba(0, 230, 118, 1)',
+             'rgba(255, 238, 88, 1)',
+            '#2196F3'
+           
+          ],
+          borderWidth: 1,
+          cutout: '80%', // Thin doughnut ring
+          spacing: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#fff' }
+          }
+        }
+      }
+    });
+    
+    // Doughnut Chart for Orders Data
+    const ctxDoughnut2 = document.getElementById('doughnutChart2').getContext('2d');
+    const doughnutChart2 = new Chart(ctxDoughnut2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Compensation', 'Salary'],
+        datasets: [{
+          data: [81, 19],
+          backgroundColor: [
+            'rgba(0, 230, 118, 0.8)',   // Assigned Orders: custom vibrant green
+               // Unassigned Orders: red
+            'rgba(255, 238, 88, 0.8)'    // Completed Orders: yellow
+          ],
+          borderColor: [
+            'rgba(0, 230, 118, 1)',
+            
+            'rgba(255, 238, 88, 1)'
+          ],
+          borderWidth: 1,
+          cutout: '80%', // Thin doughnut ring
+          spacing: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#fff' }
+          }
+        }
+      }
+    });
+  </script>
+  
+  
+</body>
+</html>

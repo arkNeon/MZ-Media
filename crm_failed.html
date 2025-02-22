@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
+  <title>failed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background-color: #1e1e2d;
+      color: #fff;
+    }
+    
+    /* Extended mode (to be implemented later) */
+       /* ------------------------------
+       Expanded Mode Sidebar
+       ------------------------------ */
+       .sidebar-extended {
+      width: 220px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow-y: auto;
+      display: none;  /* initially hidden */
+      transition: transform 0.3s ease;
+      padding-top: 5px;
+    }
+    
+    .sidebar-extended .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-extended .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-extended .menu li {
+      position: relative;
+    }
+    
+    /* Buttons in extended mode show both icon and text */
+    .sidebar-extended button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .sidebar-extended button:hover {
+      background-color: #252525;
+    }
+    
+    .sidebar-extended button i {
+      min-width: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+    
+    /* The text label appears in a <span> and is left-aligned */
+    .sidebar-extended button span {
+      margin-left: 10px;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+    
+    /* Dropdown toggle buttons: text on left, chevron on right */
+    .sidebar-extended li.has-submenu > button {
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Make the text label take available space */
+    .sidebar-extended li.has-submenu > button span {
+      flex: 1;
+      text-align: left;
+      
+    }
+    
+    /* The chevron icon stays on the right */
+    .sidebar-extended li.has-submenu > button > i:last-child {
+      margin-left: auto;
+      
+    }
+    
+    /* Submenu container in extended mode */
+    .sidebar-extended li.has-submenu .submenu {
+      list-style: none;
+      padding-left: 10px;
+      display: none;
+      flex-direction: column;
+      position: relative;
+      
+      /* A vertical line on the left side of the submenu list */
+      border-left: 1px solid #fff;
+      margin-left: 25px;
+    }
+    
+    .sidebar-extended li.has-submenu.active .submenu {
+      display: flex;
+    }
+    
+    /* Tree branch for each submenu item: a small horizontal line */
+    .sidebar-extended .submenu li {
+      position: relative;
+      padding-left: 0px;
+     
+    }
+    .sidebar-extended .menu > li {
+  margin-bottom: 15.2px;
+}
+
+    .sidebar-extended .submenu li::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      width: 10px;
+      border-top: 1px solid #fff;
+      transform: translateY(-50%);
+    }
+    .sidebar-extended li.has-submenu.active > button i.fa-chevron-down {
+  transform: rotate(180deg);
+}
+.sidebar-extended .submenu li button {
+      padding: 8px 10px;    /* Smaller padding than main buttons */
+      font-size: 14px;      /* Smaller overall font size */
+    }
+    
+    .sidebar-extended .submenu li button i {
+      font-size: 16px;      /* Smaller icon size */
+      min-width: 24px;      /* Adjust if necessary */
+    }
+    
+    .sidebar-extended .submenu li button span {
+      font-size: 14px;      /* Smaller text size */
+      margin-left: 8px;     /* Adjust spacing if needed */
+    }
+    
+    /* When expanded sidebar is visible, shift main content */
+    .sidebar-extended.active ~ .main-content {
+      margin-left: 220px;
+    }
+
+    
+    /* Collapsed mode */
+    .sidebar-collapsed {
+      width: 60px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow: visible;
+    }
+    
+    .sidebar-collapsed .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-collapsed .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-collapsed .menu li {
+      position: relative;
+    }
+    .sidebar-collapsed button i {
+     
+      font-size: 18px;
+    }
+    /* All buttons: only icons are visible */
+    .sidebar-collapsed button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    /* Hide inner text and dropdown icons except tooltip */
+    .sidebar-collapsed button span:not(.tooltip),
+    .sidebar-collapsed button .dropdown-icon {
+      display: none;
+    }
+    
+    /* Standard menu items without submenu */
+    .sidebar-collapsed .menu li:not(.has-submenu) > button {
+      width: 60px;
+      height: 54px;
+    }
+    
+    /* For submenu items, use a flex container with no gap */
+    .sidebar-collapsed .menu li.has-submenu {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px 0 0 10px;
+      overflow: visible;
+      font-size: 14px; /* Restore icon font size */
+      transition: background-color 0.3s ease;
+    }
+    
+    /* The main button remains fixed at 60px */
+    .sidebar-collapsed .menu li.has-submenu > button {
+      width: 60px;
+      height: 54px;
+      flex-shrink: 0;
+      
+    }
+    
+    /* The submenu container sits directly beside the main button */
+    .sidebar-collapsed .menu li.has-submenu .submenu {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+     
+    }
+    
+    /* On hover, set a unified background and slide out the submenu */
+    .sidebar-collapsed .menu li.has-submenu:hover {
+      background-color: #252525;
+    
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu:hover .submenu {
+      transform: scaleX(1);
+      background-color: #252525;
+      border-radius: 0 10px 10px 0;
+    
+    }
+    
+    /* Submenu item buttons – no extra margins */
+    .sidebar-collapsed .menu li.has-submenu .submenu li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button {
+      width: 40px;
+      height: 54px;
+      background: none;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      font-size: 14px !important;
+    }
+    /* Scale up the submenu icon on hover */
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button:hover i {
+      transform: scale(1.2);
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      transition: transform 0.3s ease;
+    }
+    
+    /* Tooltip styling */
+    /* Tooltip styling for all buttons (main and submenu) */
+    .sidebar-collapsed .menu li > button .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #575757;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 10;
+    }
+    
+    .sidebar-collapsed .menu li > button:hover .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    .main-content {
+            margin-left: 60px;
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.05s;
+         
+        }
+
+       
+    .header-container {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #3a3f5c, #3a3f5c);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin: -20px!important;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 20px;
+            border-bottom: 1px solid #ffffff;
+            color: #f9f9f9;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .top-header .icons {
+            display: flex;
+            gap: 25px;
+        }
+
+        .top-header i {
+            font-size: 18px;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+        }
+        .top-header i:hover {
+            
+            color: #fefefe;
+            scale: 1.1;
+        }
+        /* Bottom Header */
+        .bottom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .barber-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+.barber-profile i {
+    font-size: 30px;
+    color: #dcdcdc;
+}
+
+        .barber-profile h1 {
+            margin: 0;
+            font-size: 17px;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .header-actions button {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    padding: 5px 10px;
+    border: 1px solid gray; /* Gray border */
+    background: transparent; /* Transparent background */
+    color: white;
+    cursor: pointer;
+    border-radius: 12px; /* 12px border radius */
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.header-actions button i {
+    font-size: 16px;
+}
+
+/* Hover Effect */
+.header-actions button:hover {
+  background: #6c5ce7;
+    color: white;
+}
+ /* Active state for filter buttons (always showing hover effect) */
+ .header-actions button.active {
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+      color: white;
+    }
+        .report-btn { background: #007bff; color: white; }
+
+        .logo-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .logo {
+            height: 25px;
+        }
+        /* Summary Cards */
+        .switch-dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .switch-dashboard:hover {
+            background-color: #e84118;
+            transform: scale(1.05);
+        }
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            text-align: left;
+        }
+
+        th {
+            background: #444;
+        }
+
+        .plus-btn, .equal-btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+  /* Container for Cards */
+  .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 0px;
+      
+      justify-content: center;
+      margin-top: 40px;
+    }
+
+    /* Individual Card Styles */
+    .card {
+      background-color: #2e2e3e;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      width: calc(25% - 40px);
+      min-width: 250px;
+      box-sizing: border-box;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+   
+   box-shadow: 2px 2px 10px 1px #6c5ce79d;
+ }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.5em;
+    }
+
+    .card p {
+      margin: 5px 0;
+      font-size: 0.95em;
+      color: #ccc;
+    }
+
+    /* Social Icons Styles */
+    .social-icons {
+      margin-top: 15px;
+      display: flex;
+      gap: 15px;
+    }
+
+    .social-icons a {
+      color: #fff;
+      font-size: 1.3em;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .social-icons a.linkedin:hover {
+      color: #0077B5;
+    }
+
+    .social-icons a.email:hover {
+      color: #D44638;
+    }
+
+    .social-icons a.instagram:hover {
+      color: #E1306C;
+    }
+
+    .social-icons a.youtube:hover {
+      color: #FF0000;
+    }
+      /* Followup Info Styles */
+      .followup-info {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #444;
+    }
+
+    .followup-info p {
+      margin: 5px 0;
+      font-size: 0.85em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <!-- Use "sidebar-collapsed" for collapsed mode; "sidebar-extended" will be used later -->
+  <!-- Use "sidebar-collapsed" for collapsed mode -->
+  <div class="sidebar sidebar-collapsed" id="collapsedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggle">
+          <i class="fas fa-bars"></i>
+          <span class="tooltip">Menu</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span class="tooltip">Admin</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span class="tooltip">Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="tooltip">Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span class="tooltip">Projects</span>
+        </button>
+      </li>
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span class="tooltip">Clients</span>
+        </button>
+      </li>
+      
+      <!-- CRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-database"></i>
+          <span class="tooltip">CRM</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span class="tooltip">Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span class="tooltip">Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span class="tooltip">Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span class="tooltip">Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-sack-dollar"></i>
+          <span class="tooltip">Finance</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span class="tooltip">Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span class="tooltip">Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span class="tooltip">Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span class="tooltip">Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-users"></i>
+          <span class="tooltip">HRM</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span class="tooltip">Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span class="tooltip">Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span class="tooltip">Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-file-invoice"></i>
+          <span class="tooltip">Invoices</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span class="tooltip">Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span class="tooltip">Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span class="tooltip">Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  
+
+
+
+
+
+
+
+    <!-- Expanded Sidebar (hidden by default) -->
+   <!-- Expanded Sidebar (hidden by default) -->
+  <div class="sidebar sidebar-extended" id="expandedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggleExtended">
+          <i class="fas fa-bars"></i>
+          <span></span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span>Admin Panel</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span>Manage Projects</span>
+        </button>
+      </li>
+     
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span>Client Database</span>
+        </button>
+      </li>
+       <!-- CRM Section with submenu -->
+       <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-database"></i>
+          <span>CRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span>Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span>Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span>Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span>Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-sack-dollar"></i>
+          <span>Finance</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span>Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span>Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-users"></i>
+          <span>HRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span>Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span>Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span>Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-file-invoice"></i>
+          <span>Invoices</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span>Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span>Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span>Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <button class="switch-dashboard" onclick="window.location.href='index.html'">Switch Dashboard</button>
+  <div class="main-content">
+    <div class="header-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div style="color: white;">MZ Media</div>
+            <div class="icons">
+                <i class="fas fa-edit"></i>
+                <i class="fa-solid fa-calculator"></i>
+                <i class="fas fa-palette"></i>
+                <i class="fa-regular fa-message"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        
+        <!-- Bottom Header -->
+        <div class="bottom-header">
+            <div class="barber-profile">
+               <!--<div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="logo">
+                </div>
+                <i class="fas fa-user-circle"></i>--> 
+                <h1>failed</h1>
+            </div>
+            
+            <div class="header-actions">
+             
+              <button class="add-btn" id="assigned-btn">
+                <i class="fas fa-envelope"></i> BulkEmail
+              </button>
+              <button class="add-btn" id="assigned-btn">
+                <i class="fas fa-paste"></i> Report
+              </button>
+             
+        </div>
+    </div>
+    
+  </div>
+  <div class="cards-container">
+    <!-- Card 1 -->
+    <div class="card">
+      <h2>John Doe</h2>
+      <p><strong>Origin:</strong> New York, USA</p>
+      <p><strong>Source:</strong> Website</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:john@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 25 days ago</p>
+        <p><strong>Reason of failure:</strong> Already had editors.</p>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="card">
+      <h2>Jane Smith</h2>
+      <p><strong>Origin:</strong> London, UK</p>
+      <p><strong>Source:</strong> Referral</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:jane@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 27 days ago</p>
+        <p><strong>Reason of failure:</strong> No response.</p>
+      </div>
+    </div>
+    <!-- Card 3 -->
+    <div class="card">
+      <h2>Alex Johnson</h2>
+      <p><strong>Origin:</strong> Sydney, Australia</p>
+      <p><strong>Source:</strong> Social Media</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:alex@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 30 days ago</p>
+        <p><strong>Reason of failure:</strong> Out of budget.</p>
+      </div>
+    </div>
+    <!-- Card 4 -->
+    <div class="card">
+      <h2>Emily Davis</h2>
+      <p><strong>Origin:</strong> Toronto, Canada</p>
+      <p><strong>Source:</strong> Event</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:emily@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 22 days ago</p>
+        <p><strong>Reason of failure:</strong> Already working with competitor.</p>
+      </div>
+    </div>
+    <!-- Card 5 -->
+    <div class="card">
+      <h2>Michael Brown</h2>
+      <p><strong>Origin:</strong> Chicago, USA</p>
+      <p><strong>Source:</strong> Advertisement</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:michael@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 26 days ago</p>
+        <p><strong>Reason of failure:</strong> Lack of interest.</p>
+      </div>
+    </div>
+    <!-- Card 6 -->
+    <div class="card">
+      <h2>Sarah Lee</h2>
+      <p><strong>Origin:</strong> San Francisco, USA</p>
+      <p><strong>Source:</strong> Organic Search</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:sarah@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 23 days ago</p>
+        <p><strong>Reason of failure:</strong> Not a priority.</p>
+      </div>
+    </div>
+    <!-- Card 7 -->
+    <div class="card">
+      <h2>David Wilson</h2>
+      <p><strong>Origin:</strong> Berlin, Germany</p>
+      <p><strong>Source:</strong> Email Campaign</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:david@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 28 days ago</p>
+        <p><strong>Reason of failure:</strong> Not interested in additional services.</p>
+      </div>
+    </div>
+    <!-- Card 8 -->
+    <div class="card">
+      <h2>Laura Martinez</h2>
+      <p><strong>Origin:</strong> Madrid, Spain</p>
+      <p><strong>Source:</strong> Webinar</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:laura@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 29 days ago</p>
+        <p><strong>Reason of failure:</strong> No response after follow-up.</p>
+      </div>
+    </div>
+    <!-- Card 9 -->
+    <div class="card">
+      <h2>Chris Taylor</h2>
+      <p><strong>Origin:</strong> Melbourne, Australia</p>
+      <p><strong>Source:</strong> Direct Traffic</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:chris@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 20 days ago</p>
+        <p><strong>Reason of failure:</strong> Out of budget.</p>
+      </div>
+    </div>
+    <!-- Card 10 -->
+    <div class="card">
+      <h2>Amanda Moore</h2>
+      <p><strong>Origin:</strong> Paris, France</p>
+      <p><strong>Source:</strong> Social Media</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:amanda@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 24 days ago</p>
+        <p><strong>Reason of failure:</strong> Already had editors.</p>
+      </div>
+    </div>
+    <!-- Card 11 -->
+    <div class="card">
+      <h2>Robert King</h2>
+      <p><strong>Origin:</strong> Dublin, Ireland</p>
+      <p><strong>Source:</strong> Referral</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:robert@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 26 days ago</p>
+        <p><strong>Reason of failure:</strong> No response.</p>
+      </div>
+    </div>
+    <!-- Card 12 -->
+    <div class="card">
+      <h2>Olivia Green</h2>
+      <p><strong>Origin:</strong> Vancouver, Canada</p>
+      <p><strong>Source:</strong> Event</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:olivia@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 25 days ago</p>
+        <p><strong>Reason of failure:</strong> Already working with competitor.</p>
+      </div>
+    </div>
+    <!-- Card 13 -->
+    <div class="card">
+      <h2>James Anderson</h2>
+      <p><strong>Origin:</strong> Seattle, USA</p>
+      <p><strong>Source:</strong> Organic Search</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:james@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 27 days ago</p>
+        <p><strong>Reason of failure:</strong> Lack of interest.</p>
+      </div>
+    </div>
+    <!-- Card 14 -->
+    <div class="card">
+      <h2>Patricia Harris</h2>
+      <p><strong>Origin:</strong> Los Angeles, USA</p>
+      <p><strong>Source:</strong> Advertisement</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:patricia@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 22 days ago</p>
+        <p><strong>Reason of failure:</strong> Not a priority.</p>
+      </div>
+    </div>
+    <!-- Card 15 -->
+    <div class="card">
+      <h2>Daniel Scott</h2>
+      <p><strong>Origin:</strong> Austin, USA</p>
+      <p><strong>Source:</strong> Webinar</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:daniel@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 28 days ago</p>
+        <p><strong>Reason of failure:</strong> Out of budget.</p>
+      </div>
+    </div>
+    <!-- Card 16 -->
+    <div class="card">
+      <h2>Linda Walker</h2>
+      <p><strong>Origin:</strong> Miami, USA</p>
+      <p><strong>Source:</strong> Direct Traffic</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:linda@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 29 days ago</p>
+        <p><strong>Reason of failure:</strong> Already had editors.</p>
+      </div>
+    </div>
+    <!-- Card 17 -->
+    <div class="card">
+      <h2>Mark Robinson</h2>
+      <p><strong>Origin:</strong> Amsterdam, Netherlands</p>
+      <p><strong>Source:</strong> Social Media</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:mark@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 20 days ago</p>
+        <p><strong>Reason of failure:</strong> No response.</p>
+      </div>
+    </div>
+    <!-- Card 18 -->
+    <div class="card">
+      <h2>Jessica Young</h2>
+      <p><strong>Origin:</strong> Stockholm, Sweden</p>
+      <p><strong>Source:</strong> Referral</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:jessica@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 23 days ago</p>
+        <p><strong>Reason of failure:</strong> Already working with competitor.</p>
+      </div>
+    </div>
+    <!-- Card 19 -->
+    <div class="card">
+      <h2>Thomas Clark</h2>
+      <p><strong>Origin:</strong> Milan, Italy</p>
+      <p><strong>Source:</strong> Event</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:thomas@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 27 days ago</p>
+        <p><strong>Reason of failure:</strong> Lack of interest.</p>
+      </div>
+    </div>
+    <!-- Card 20 -->
+    <div class="card">
+      <h2>Barbara Lewis</h2>
+      <p><strong>Origin:</strong> Tokyo, Japan</p>
+      <p><strong>Source:</strong> Organic Search</p>
+      <div class="social-icons">
+        <a class="linkedin" href="#"><i class="fab fa-linkedin"></i></a>
+        <a class="email" href="mailto:barbara@example.com"><i class="fas fa-envelope"></i></a>
+        <a class="instagram" href="#"><i class="fab fa-instagram"></i></a>
+        <a class="youtube" href="#"><i class="fab fa-youtube"></i></a>
+      </div>
+      <div class="followup-info">
+        <p><strong>Last contacted:</strong> 26 days ago</p>
+        <p><strong>Reason of failure:</strong> Not interested in additional services.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+  
+  <script>
+    // Get references to elements.
+    const collapsedSidebar = document.getElementById('collapsedSidebar');
+    const expandedSidebar = document.getElementById('expandedSidebar');
+    const mainContent = document.querySelector('.main-content');
+  
+    // Set initial positions (if not already set via CSS)
+    // Expanded sidebar starts off-screen to the left.
+    expandedSidebar.style.left = '-220px';
+    // Main content margin is set as in collapsed mode.
+    mainContent.style.marginLeft = '60px';
+  
+    // Helper function: animate a numeric CSS property.
+    // element: the DOM element.
+    // property: CSS property name (in camelCase) to animate (e.g. 'left' or 'marginLeft').
+    // start: starting numeric value.
+    // end: ending numeric value.
+    // duration: total duration of the animation (ms).
+    // unit: string unit (e.g., 'px').
+    // callback: function to call when animation completes.
+    function animateProperty(element, property, start, end, duration, unit, callback) {
+      const startTime = performance.now();
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Using linear easing; adjust if desired.
+        const value = start + (end - start) * progress;
+        element.style[property] = value + unit;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+  
+    // Function to show the expanded sidebar with slide-in effect.
+    function showExpandedSidebar() {
+      // Display the expanded sidebar.
+      expandedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from -220px to 0 over 200ms.
+      animateProperty(expandedSidebar, 'left', -220, 0, 200, 'px');
+  
+      // Animate main content margin from 60px to 220px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 60, 220, 200, 'px');
+  
+      // After the animation, hide the collapsed sidebar.
+      setTimeout(() => {
+        collapsedSidebar.style.display = 'none';
+      }, 5);
+    }
+  
+    // Function to hide the expanded sidebar with slide-out effect.
+    function hideExpandedSidebar() {
+      // Show the collapsed sidebar before animation.
+      collapsedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from 0 to -220px over 200ms.
+      animateProperty(expandedSidebar, 'left', 0, -220, 200, 'px', () => {
+        expandedSidebar.style.display = 'none';
+      });
+  
+      // Animate main content margin from 220px to 60px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 220, 60, 200, 'px');
+    }
+  
+    // Attach event listeners.
+    // When clicking the menu button on the collapsed sidebar.
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      showExpandedSidebar();
+    });
+  
+    // When clicking the menu button on the expanded sidebar.
+    document.getElementById('menuToggleExtended').addEventListener('click', () => {
+      hideExpandedSidebar();
+    });
+  
+    // Function to toggle submenu items in the extended sidebar.
+    // This function closes any other open submenu before toggling the selected one.
+    function toggleSubmenu(button) {
+      const parentLi = button.parentElement;
+      const openSubmenus = document.querySelectorAll('.sidebar-extended .has-submenu.active');
+      openSubmenus.forEach((submenu) => {
+        if (submenu !== parentLi) {
+          submenu.classList.remove('active');
+        }
+      });
+      parentLi.classList.toggle('active');
+    }
+   
+
+  </script>
+  
+  
+</body>
+</html>

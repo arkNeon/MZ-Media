@@ -1,0 +1,2625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="logo.ico" />
+  <title>Projects</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background-color: #1e1e2d;
+      color: #fff;
+    }
+    
+    /* Extended mode (to be implemented later) */
+       /* ------------------------------
+       Expanded Mode Sidebar
+       ------------------------------ */
+       .sidebar-extended {
+      width: 220px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow-y: auto;
+      display: none;  /* initially hidden */
+      transition: transform 0.3s ease;
+      padding-top: 5px;
+    }
+    
+    .sidebar-extended .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-extended .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-extended .menu li {
+      position: relative;
+    }
+    
+    /* Buttons in extended mode show both icon and text */
+    .sidebar-extended button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .sidebar-extended button:hover {
+      background-color: #252525;
+    }
+    
+    .sidebar-extended button i {
+      min-width: 30px;
+      text-align: center;
+      font-size: 18px;
+    }
+    
+    /* The text label appears in a <span> and is left-aligned */
+    .sidebar-extended button span {
+      margin-left: 10px;
+      white-space: nowrap;
+      font-size: 16px;
+    }
+    
+    /* Dropdown toggle buttons: text on left, chevron on right */
+    .sidebar-extended li.has-submenu > button {
+      display: flex;
+      align-items: center;
+    }
+    
+    /* Make the text label take available space */
+    .sidebar-extended li.has-submenu > button span {
+      flex: 1;
+      text-align: left;
+      
+    }
+    
+    /* The chevron icon stays on the right */
+    .sidebar-extended li.has-submenu > button > i:last-child {
+      margin-left: auto;
+      
+    }
+    
+    /* Submenu container in extended mode */
+    .sidebar-extended li.has-submenu .submenu {
+      list-style: none;
+      padding-left: 10px;
+      display: none;
+      flex-direction: column;
+      position: relative;
+      
+      /* A vertical line on the left side of the submenu list */
+      border-left: 1px solid #fff;
+      margin-left: 25px;
+    }
+    
+    .sidebar-extended li.has-submenu.active .submenu {
+      display: flex;
+    }
+    
+    /* Tree branch for each submenu item: a small horizontal line */
+    .sidebar-extended .submenu li {
+      position: relative;
+      padding-left: 0px;
+     
+    }
+    .sidebar-extended .menu > li {
+  margin-bottom: 15.2px;
+}
+
+    .sidebar-extended .submenu li::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 50%;
+      width: 10px;
+      border-top: 1px solid #fff;
+      transform: translateY(-50%);
+    }
+    .sidebar-extended li.has-submenu.active > button i.fa-chevron-down {
+  transform: rotate(180deg);
+}
+.sidebar-extended .submenu li button {
+      padding: 8px 10px;    /* Smaller padding than main buttons */
+      font-size: 14px;      /* Smaller overall font size */
+    }
+    
+    .sidebar-extended .submenu li button i {
+      font-size: 16px;      /* Smaller icon size */
+      min-width: 24px;      /* Adjust if necessary */
+    }
+    
+    .sidebar-extended .submenu li button span {
+      font-size: 14px;      /* Smaller text size */
+      margin-left: 8px;     /* Adjust spacing if needed */
+    }
+    
+    /* When expanded sidebar is visible, shift main content */
+    .sidebar-extended.active ~ .main-content {
+      margin-left: 220px;
+    }
+
+    
+    /* Collapsed mode */
+    .sidebar-collapsed {
+      width: 60px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background-color: #111;
+      overflow: visible;
+    }
+    
+    .sidebar-collapsed .menu {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .sidebar-collapsed .menu-btn i {
+    font-size: 22px !important;
+    }
+    .sidebar-collapsed .menu li {
+      position: relative;
+    }
+    .sidebar-collapsed button i {
+     
+      font-size: 18px;
+    }
+    /* All buttons: only icons are visible */
+    .sidebar-collapsed button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    /* Hide inner text and dropdown icons except tooltip */
+    .sidebar-collapsed button span:not(.tooltip),
+    .sidebar-collapsed button .dropdown-icon {
+      display: none;
+    }
+    
+    /* Standard menu items without submenu */
+    .sidebar-collapsed .menu li:not(.has-submenu) > button {
+      width: 60px;
+      height: 54px;
+    }
+    
+    /* For submenu items, use a flex container with no gap */
+    .sidebar-collapsed .menu li.has-submenu {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 10px 0 0 10px;
+      overflow: visible;
+      font-size: 14px; /* Restore icon font size */
+      transition: background-color 0.3s ease;
+    }
+    
+    /* The main button remains fixed at 60px */
+    .sidebar-collapsed .menu li.has-submenu > button {
+      width: 60px;
+      height: 54px;
+      flex-shrink: 0;
+      
+    }
+    
+    /* The submenu container sits directly beside the main button */
+    .sidebar-collapsed .menu li.has-submenu .submenu {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: 1000 !important;
+     
+    }
+    
+    /* On hover, set a unified background and slide out the submenu */
+    .sidebar-collapsed .menu li.has-submenu:hover {
+      background-color: #252525;
+      z-index: 1000 !important;
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu:hover .submenu {
+      transform: scaleX(1);
+      background-color: #252525;
+      border-radius: 0 10px 10px 0;
+      z-index: 1000 !important;
+    
+    }
+    
+    /* Submenu item buttons – no extra margins */
+    .sidebar-collapsed .menu li.has-submenu .submenu li {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      z-index: 10000 !important;
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button {
+      width: 40px;
+      height: 54px;
+      background: none;
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.3s ease;
+      z-index: 10000 !important;
+    }
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      font-size: 14px !important;
+      z-index: 10000 !important;
+    }
+    /* Scale up the submenu icon on hover */
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button:hover i {
+      transform: scale(1.2);
+      z-index: 10000 !important;
+    }
+    
+    .sidebar-collapsed .menu li.has-submenu .submenu li > button i {
+      transition: transform 0.3s ease;
+      z-index: 10000 !important;
+    }
+    
+    /* Tooltip styling */
+    /* Tooltip styling for all buttons (main and submenu) */
+    .sidebar-collapsed .menu li > button .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #575757;
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 10000 !important;
+    }
+    
+    .sidebar-collapsed .menu li > button:hover .tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+      z-index: 10000 !important;
+    }
+
+    .main-content {
+            margin-left: 60px;
+            flex-grow: 1;
+            padding: 20px;
+            transition: margin-left 0.05s;
+         
+        }
+
+       
+    .header-container {
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #3a3f5c, #3a3f5c);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            margin: -20px!important;
+            border-radius: 0 0 15px 15px;
+        }
+        
+        /* Top Header */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 20px;
+            border-bottom: 1px solid #ffffff;
+            color: #f9f9f9;
+            font-size: 19px;
+            font-weight: bold;
+        }
+
+        .top-header .icons {
+            display: flex;
+            gap: 25px;
+        }
+
+        .top-header i {
+            font-size: 18px;
+            color: rgb(255, 255, 255);
+            cursor: pointer;
+        }
+        .top-header i:hover {
+            
+            color: #fefefe;
+            scale: 1.1;
+        }
+        /* Bottom Header */
+        .bottom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        .barber-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+}
+
+.barber-profile i {
+    font-size: 30px;
+    color: #dcdcdc;
+}
+
+        .barber-profile h1 {
+            margin: 0;
+            font-size: 17px;
+            color: #ffffff;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .header-actions button {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+    padding: 5px 10px;
+    border: 1px solid gray; /* Gray border */
+    background: transparent; /* Transparent background */
+    color: white;
+    cursor: pointer;
+    border-radius: 12px; /* 12px border radius */
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    margin-left: 10px;
+}
+
+.header-actions button i {
+    font-size: 16px;
+}
+
+/* Hover Effect */
+.header-actions button:hover {
+  background: #6c5ce7;
+    color: white;
+}
+ /* Active state for filter buttons (always showing hover effect) */
+ .header-actions button.active {
+  background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+      color: white;
+    }
+        .report-btn { background: #007bff; color: white; }
+
+        .logo-container {
+            background-color: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+
+        .logo {
+            height: 25px;
+        }
+        /* Summary Cards */
+       
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+            text-align: left;
+        }
+
+        th {
+            background: #444;
+        }
+
+        .plus-btn, .equal-btn {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .plus-btn { background: #28a745; color: white; }
+        .equal-btn { background: #007bff; color: white; }
+       
+  /* Responsive container for cards */
+  .cards-container {
+    
+  
+      margin-top: 40px;
+      transition: opacity 0.5s ease;
+    }
+    .cards{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+      /* Minimal styling for the dummy cards with a slightly smaller font size */
+      .card {
+        background-color: #2e2e3e;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      padding: 8px 7px;
+      font-size: 0.9em; /* Slightly reduced font size */
+    }
+    .card:hover {
+   
+   box-shadow: 2px 2px 10px 1px #6c5ce79d;
+ }
+    .project-title {
+      text-align: center;
+      margin: 0;
+      color: #ddd;
+      font-size: 1.1em; /* Reduced title size */
+    }
+    .order-no {
+      display: block;
+      text-align: center;
+      font-size: 0.8em;
+      margin-bottom: 10px;
+    }
+    .project-info {
+      margin-bottom: 15px;
+    }
+    .project-info p {
+      margin: 5px 0;
+      color: #ccc;
+    }
+    
+    /* ------------------------------
+       Tracker Styles (unchangeable)
+       ------------------------------ */
+    .progress-bar {
+      position: relative;
+      width: 100%;
+    }
+ 
+
+    /* Container for the manager’s progress bar */
+    .manager-bar {
+    height: 10px;
+    background: #e9ecef;
+    border-radius: 10px !important;
+    overflow: visible; /* Allow enlarged segments to be visible */
+    display: flex;
+    margin-top: 0px;
+    position: relative;
+  }
+  
+  /* Apply border-radius to the first and last segments */
+  .manager-bar > .manager-seg:first-child {
+    border-top-left-radius: 10px !important;
+    border-bottom-left-radius: 10px;
+  }
+  .manager-bar > .manager-seg:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  
+  /* Each segment of the manager bar */
+  .manager-seg {
+    height: 100%;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+  
+  /* Colors for each segment */
+  .manager-seg.ongoing {
+    background: #007bff; /* Blue for ongoing */
+  }
+  .manager-seg.under-review {
+    background: #ffc107; /* Yellow for under-review */
+  }
+  .manager-seg.completed {
+    background: #28a745; /* Green for completed */
+  }
+  
+  /* Tooltip styling: on hover, show the data-tooltip attribute */
+  .manager-seg[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: none;
+  }
+  
+  /* Enlarge the hovered segment */
+  .manager-seg:hover {
+    height: 12px;
+  }
+    /* The track (background) for the progress fill */
+    .progress-track {
+      background: #ecf0f1;
+      border-radius: 6px;
+      height: 15px;
+      overflow: hidden;
+    }
+    /* The animated fill that represents progress */
+    .progress-fill {
+      background: #6c5ce7;
+      height: 100%;
+      width: 0;
+      animation: fillBar 2s forwards;
+      transition: background 0.5s ease;
+      z-index: -500;
+    }
+    /* Hover effect: change the fill to a vibrant gradient */
+    .progress-bar:hover .progress-fill {
+      background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+    }
+    /* Centered percentage text on the progress bar */
+    .progress-percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+    /* Animation keyframes for the progress fill */
+    @keyframes fillBar {
+      from { width: 0; }
+      to { width: 70%; }
+    }
+    
+    .time-tracker-bar {
+      position: relative;
+      width: 100%;
+    }
+    /* The background “track” for the fill */
+    .time-track {
+      position: relative; /* For absolute positioning of text inside */
+      background: #ecf0f1;
+      border-radius: 6px;
+      height: 15px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    /* The fill representing remaining time; animates from 0 to 70% width */
+    .time-fill {
+      background: #d73535;
+      height: 100%;
+      width: 0;
+      animation: fillBart 2s forwards;
+      transition: background 0.5s ease;
+    }
+    .time-tracker-bar:hover .time-fill {
+      background: linear-gradient(135deg, #12c2e9, #c471ed, #f64f59);
+    }
+    /* Positioning the time text inside the time-track */
+    .time-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+    /* (Optional) If you use additional time details below the bar */
+    .time-details {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      color: #fff;
+      font-size: 0.9rem;
+    }
+    @keyframes fillBart {
+      from { width: 0; }
+      to { width: 85%; }
+    }
+    @keyframes fillBart2 {
+      from { width: 0; }
+      to { width: 55%; }
+    }
+    
+    /* Mapping .time-fill2 and .progress-fill2 to the provided keyframes/styles */
+    .time-fill2 {
+      background: #d73535;
+      height: 100%;
+      width: 0;
+      animation: fillBart2 2s forwards;
+      transition: background 0.5s ease;
+    }
+    .progress-fill2 {
+      background: #6c5ce7;
+      height: 100%;
+      width: 0;
+      animation: fillBar 2s forwards;
+     z-index: -10;
+   
+    }
+  
+       /* ------------------------------
+       Modal Styles
+       ------------------------------ */
+       .modal {
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(30, 30, 45, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background-color: #2e2e3e;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 800px;
+      color: #fff;
+      position: relative;
+      animation: modalFade 0.5s;
+      max-height: 90vh;
+      overflow-y: auto;
+      /* Custom scrollbar for WebKit browsers */
+      scrollbar-width: thin;
+      scrollbar-color: #555 #222;
+    }
+    .modal-content::-webkit-scrollbar {
+      width: 6px;
+    }
+    .modal-content::-webkit-scrollbar-track {
+      background: #222;
+    }
+    .modal-content::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 3px;
+    }
+    @keyframes modalFade {
+      from { opacity: 0; transform: translateY(-50px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #fff;
+    }
+    .modal-header h2 {
+      margin: 0;
+    }
+    .modal-header p {
+      margin: 5px 0 15px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+    .modal-body h4 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+      font-size: 1em;
+      border-bottom: 1px solid #444;
+      padding-bottom: 5px;
+    }
+    .modal-body ul {
+      margin: 0 0 10px 20px;
+      padding: 0;
+    }
+    .modal-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+    }
+    .modal-body table, 
+    .modal-body th, 
+    .modal-body td {
+      border: 1px solid #444;
+    }
+    .modal-body th, 
+    .modal-body td {
+      padding: 5px;
+      font-size: 0.9em;
+      text-align: left;
+    }
+    a {
+      color: #12c2e9;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    #cards-wrapper > .cards-container {
+      /* Although each .cards-container should be displayed as grid,
+         we hide all of them by default using a more specific rule */
+      display: none;
+    }
+    #cards-wrapper > .cards-container.active {
+      /* When active, allow the provided .cards-container rule (display: grid) to take effect */
+      display: grid;
+    }
+    .employee-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.employee-header i {
+  font-size: 1.2rem;
+  color: #d6d6d6;
+}
+.container {
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: none; /* Dark background */
+      color: #e0e0e0; /* Light text */
+      box-sizing: border-box;
+    }
+    
+    /* Row and Column Grid (Plain CSS grid using Flexbox) */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin: -10px;
+    }
+    .row > [class^="col-"] {
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    /* Mimic col-md-3, col-md-6, col-md-12 */
+    .col-md-3 {
+      flex: 0 0 25%;
+      max-width: 25%;
+    }
+    .col-md-6 {
+      flex: 0 0 50%;
+      max-width: 50%;
+    }
+    .col-md-12 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+    
+    /* Dashboard Card Styles */
+    .dashboard-card {
+      border-radius: 12px;
+      background-color: #2e2e3e;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      padding: 15px;
+
+      transition: transform 0.3s ease;
+    }
+    
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .dashboard-card-body {
+      padding: 10px;
+    }
+    
+    .dashboard-card-header {
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 10px;
+      color: #e0e0e0;
+    }
+    
+    .dashboard-card-title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    
+    .dashboard-card-text {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+    
+    /* Background Colors for Cards */
+    .bg-primary {
+      background-color: #1e3a8a;
+    }
+    .bg-success {
+      background-color: #166534;
+    }
+    .bg-warning {
+      background-color: #b45309;
+    }
+    .bg-danger {
+      background-color: #9b1c1c;
+    }
+    
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 390px;
+    }
+    
+    /* Canvas Styling */
+    canvas {
+      background-color: transparent;
+    }
+    #timelineChart {
+      height: 200px;
+    }
+    /* Utility for text color */
+    .text-white {
+      color: #fff;
+    }
+    #chart-section {
+      width: 96%;
+      height: 400px;
+      display: flex;
+      background: #2e2e42;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-sizing: border-box;
+      border-radius: 10px;
+      margin: 0 auto;
+      margin-bottom: 20px;
+      z-index: -1;
+    }  .switch-dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .switch-dashboard:hover {
+            background-color: #e84118;
+            transform: scale(1.05);
+        }
+    /* Common container styling for each section */
+    .chart-container {
+      padding: 10px;
+      box-sizing: border-box;
+      overflow: hidden;
+       z-index: -1;
+    }
+    /* Column Chart Container: 50% width */
+    .column-chart {
+      width: 50%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    /* Doughnut Chart Container: 30% width */
+    .doughnut-chart {
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px; /* extra padding for doughnut */
+    }
+    /* Blocks Section: 20% width, vertically centered with gap max 15px */
+    .blocks-section {
+      width: 20%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+    }
+    /* Block styling with heading and value */
+    .block {
+      width: 90%;
+      background: #3a3a50;
+      padding: 7px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .block:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+    .heading {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+    .value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    /* Colors for values */
+    .value.total {
+      color: #f1f1f1; /* blue */
+    }
+    .value.assigned {
+      color: #ffffff; /* custom vibrant green */
+    }
+    .value.ongoing {
+      color: #2196f3; /* custom vibrant green */
+    }
+    .value.unassigned {
+      color: #ffeb3b; /* red */
+    }
+    .value.completed {
+      color: #00e676; /* yellow */
+    }
+    /* Let the canvas fill the container */
+    .chart-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Use "sidebar-collapsed" for collapsed mode; "sidebar-extended" will be used later -->
+  <!-- Use "sidebar-collapsed" for collapsed mode -->
+  <div class="sidebar sidebar-collapsed" id="collapsedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggle">
+          <i class="fas fa-bars"></i>
+          <span class="tooltip">Menu</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span class="tooltip">Admin</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span class="tooltip">Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="tooltip">Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span class="tooltip">Projects</span>
+        </button>
+      </li>
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span class="tooltip">Clients</span>
+        </button>
+      </li>
+      
+      <!-- CRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-database"></i>
+          <span class="tooltip">CRM</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span class="tooltip">Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span class="tooltip">Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span class="tooltip">Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span class="tooltip">Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-sack-dollar"></i>
+          <span class="tooltip">Finance</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span class="tooltip">Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span class="tooltip">Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span class="tooltip">Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span class="tooltip">Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-users"></i>
+          <span class="tooltip">HRM</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span class="tooltip">Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span class="tooltip">Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span class="tooltip">Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle">
+          <i class="fas fa-file-invoice"></i>
+          <span class="tooltip">Invoices</span>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span class="tooltip">Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span class="tooltip">Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span class="tooltip">Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  
+
+
+
+
+
+
+
+    <!-- Expanded Sidebar (hidden by default) -->
+   <!-- Expanded Sidebar (hidden by default) -->
+  <div class="sidebar sidebar-extended" id="expandedSidebar">
+    <ul class="menu">
+      <li>
+        <button class="menu-btn" id="menuToggleExtended">
+          <i class="fas fa-bars"></i>
+          <span></span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='admin.html'">
+          <i class="fas fa-cogs"></i>
+          <span>Admin Panel</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='home.html'">
+          <i class="fas fa-home"></i>
+          <span>Home</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='orders.html'">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span>Orders</span>
+        </button>
+      </li>
+      <li>
+        <button onclick="window.location.href='projects.html'">
+          <i class="fas fa-project-diagram"></i>
+          <span>Manage Projects</span>
+        </button>
+      </li>
+     
+      <!-- Customer Database -->
+      <li>
+        <button onclick="window.location.href='client_database.html'">
+          <i class="fas fa-handshake"></i>
+          <span>Client Database</span>
+        </button>
+      </li>
+       <!-- CRM Section with submenu -->
+       <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-database"></i>
+          <span>CRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='crm_leads.html'">
+              <i class="fas fa-user-plus"></i>
+              <span>Leads</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_failed.html'">
+              <i class="fas fa-times-circle"></i>
+              <span>Failed</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_followups.html'">
+              <i class="fas fa-sync"></i>
+              <span>Follow Ups</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='crm_closed.html'">
+              <i class="fas fa-check-circle"></i>
+              <span>Closed</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Finance Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-sack-dollar"></i>
+          <span>Finance</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='daily_accounts.html'">
+              <i class="fas fa-chart-line"></i>
+              <span>Daily</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_receivables.html'">
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Receivables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_payables.html'">
+              <i class="fas fa-hand-holding-usd"></i>
+              <span>Payables</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='finance_expenses.html'">
+              <i class="fas fa-coins"></i>
+              <span>Expenses</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- HRM Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-users"></i>
+          <span>HRM</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='hrm_files.html'">
+              <i class="fas fa-folder-open"></i>
+              <span>Files</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_productivity.html'">
+              <i class="fas fa-chart-bar"></i>
+              <span>Productivity</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='hrm_training.html'">
+              <i class="fas fa-graduation-cap"></i>
+              <span>Training</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+      <!-- Invoices Section with submenu -->
+      <li class="has-submenu">
+        <button class="dropdown-toggle" onclick="toggleSubmenu(this)">
+          <i class="fas fa-file-invoice"></i>
+          <span>Invoices</span>
+          <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+        </button>
+        <ul class="submenu">
+          <li>
+            <button onclick="window.location.href='invoice_quote.html'">
+              <i class="fas fa-file-signature"></i>
+              <span>Quote</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_confirmation.html'">
+              <i class="fas fa-file-contract"></i>
+              <span>Confirmation</span>
+            </button>
+          </li>
+          <li>
+            <button onclick="window.location.href='invoice_delivery.html'">
+              <i class="fas fa-truck"></i>
+              <span>Delivery</span>
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="main-content">
+    <button class="switch-dashboard" onclick="window.location.href='index.html'">Switch Dashboard</button>
+    <div class="header-container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div style="color: white;">MZ Media</div>
+            <div class="icons">
+                <i class="fas fa-edit"></i>
+                <i class="fa-solid fa-calculator"></i>
+                <i class="fas fa-palette"></i>
+                <i class="fa-regular fa-message"></i>
+                <i class="fas fa-user-circle"></i>
+            </div>
+        </div>
+        
+        <!-- Bottom Header -->
+        <div class="bottom-header">
+            <div class="barber-profile">
+               <!--<div class="logo-container">
+                    <img src="logo.png" alt="Logo" class="logo">
+                </div>
+                <i class="fas fa-user-circle"></i>--> 
+                <h1>projects</h1>
+            </div>
+            
+            <div class="header-actions">
+              <button class="add-btn active" data-target="projects">
+                <i class="fas fa-project-diagram"></i> Projects
+              </button>
+              <button class="add-btn" data-target="managers">
+                <i class="fas fa-user-edit"></i> Managers
+              </button>
+              <button class="add-btn" data-target="editors">
+                <i class="fas fa-user-friends"></i> Editors
+              </button>
+           
+            </div>
+        </div>
+    </div>
+    
+    <div id="cards-wrapper">
+      <!-- Each cards-container version is defined in HTML with its own content -->
+      <div class="cards-container projects active">
+        <section id="chart-section">
+          <!-- Column Chart Container (50% width) -->
+          <div class="chart-container column-chart">
+            <canvas id="lineChart"></canvas>
+          </div>
+          <!-- Doughnut Chart Container (30% width) -->
+          <div class="chart-container doughnut-chart">
+            <canvas id="doughnutChart"></canvas>
+          </div>
+          <!-- Blocks Section (20% width) -->
+          <div class="chart-container blocks-section">
+            <div class="block">
+              <div class="heading">Total Projects</div>
+              <div class="value total">8</div>
+            </div>
+            <div class="block">
+              <div class="heading">Total Tasks</div>
+              <div class="value assigned">21</div>
+            </div>
+            <div class="block">
+              <div class="heading">Ongoing</div>
+              <div class="value ongoing">14</div>
+            </div>
+            <div class="block">
+              <div class="heading">Under-review</div>
+              <div class="value unassigned">4</div>
+            </div>
+            <div class="block">
+              <div class="heading">Approved</div>
+              <div class="value completed">3</div>
+            </div>
+          </div>
+        </section>
+        
+        <div class="cards">
+      <div class="card" 
+      data-client="John Doe" 
+      data-pm="Alice Johnson" 
+      data-deadline="2025-03-15" 
+      data-progress="50% done" 
+      data-time="15 days left">
+   <h3 class="project-title">Corporate Promo Videos</h3>
+   <small class="order-no">Order No: 001</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Alice Johnson</p>
+     <p><strong>Assignee:</strong> 3</p>
+     <p><strong>Client Name:</strong> John Doe</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">15 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">50% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 2 -->
+ <div class="card" 
+      data-client="Jane Smith" 
+      data-pm="Bob Smith" 
+      data-deadline="2025-03-20" 
+      data-progress="30% done" 
+      data-time="20 days left">
+   <h3 class="project-title">Social Media Ad Video</h3>
+   <small class="order-no">Order No: 002</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Bob Smith</p>
+     <p><strong>Assignee:</strong> 5</p>
+     <p><strong>Client Name:</strong> Jane Smith</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">20 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">30% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 3 -->
+ <div class="card" 
+      data-client="Robert Brown" 
+      data-pm="Carol White" 
+      data-deadline="2025-03-10" 
+      data-progress="75% done" 
+      data-time="10 days left">
+   <h3 class="project-title">Product Demo Video</h3>
+   <small class="order-no">Order No: 003</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Carol White</p>
+     <p><strong>Assignee:</strong> 2</p>
+     <p><strong>Client Name:</strong> Robert Brown</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">10 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">75% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 4 -->
+ <div class="card" 
+      data-client="Emily Davis" 
+      data-pm="David Lee" 
+      data-deadline="2025-03-18" 
+      data-progress="60% done" 
+      data-time="12 days left">
+   <h3 class="project-title">Event Recap Video</h3>
+   <small class="order-no">Order No: 004</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> David Lee</p>
+     <p><strong>Assignee:</strong> 4</p>
+     <p><strong>Client Name:</strong> Emily Davis</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">12 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">60% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 5 -->
+ <div class="card" 
+      data-client="Michael Johnson" 
+      data-pm="Eva Green" 
+      data-deadline="2025-03-22" 
+      data-progress="40% done" 
+      data-time="18 days left">
+   <h3 class="project-title">Brand Story Video</h3>
+   <small class="order-no">Order No: 005</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Eva Green</p>
+     <p><strong>Assignee:</strong> 6</p>
+     <p><strong>Client Name:</strong> Michael Johnson</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">18 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">40% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 6 -->
+ <div class="card" 
+      data-client="Sarah Miller" 
+      data-pm="Frank Miller" 
+      data-deadline="2025-03-25" 
+      data-progress="55% done" 
+      data-time="22 days left">
+   <h3 class="project-title">Explainer Video</h3>
+   <small class="order-no">Order No: 006</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Frank Miller</p>
+     <p><strong>Assignee:</strong> 3</p>
+     <p><strong>Client Name:</strong> Sarah Miller</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">22 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">55% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 7 -->
+ <div class="card" 
+      data-client="David Wilson" 
+      data-pm="Grace Kim" 
+      data-deadline="2025-03-17" 
+      data-progress="65% done" 
+      data-time="14 days left">
+   <h3 class="project-title">Training Video</h3>
+   <small class="order-no">Order No: 007</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Grace Kim</p>
+     <p><strong>Assignee:</strong> 4</p>
+     <p><strong>Client Name:</strong> David Wilson</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">14 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">65% done</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Dummy Card 8 -->
+ <div class="card" 
+      data-client="Laura Martin" 
+      data-pm="Henry Adams" 
+      data-deadline="2025-03-19" 
+      data-progress="70% done" 
+      data-time="17 days left">
+   <h3 class="project-title">Webinar Highlights Video</h3>
+   <small class="order-no">Order No: 008</small>
+   <div class="project-info">
+     <p><strong>Project Manager:</strong> Henry Adams</p>
+     <p><strong>Assignee:</strong> 2</p>
+     <p><strong>Client Name:</strong> Laura Martin</p>
+   </div>
+   <div class="card-footer">
+     <div class="time-tracker-bar">
+       <div class="time-track">
+         <div class="time-fill2"></div>
+         <span class="time-text">17 days left</span>
+       </div>
+     </div>
+     <div class="progress-bar">
+       <div class="progress-track">
+         <div class="progress-fill2"></div>
+       </div>
+       <span class="progress-percentage">70% done</span>
+     </div>
+   </div>
+ </div>
+</div>
+</div>
+<div class="cards-container managers">
+  <div class="cards">
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> John Doe</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 5</p>
+      <p>Total Ongoing: 2</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 2</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- For example, 40% corresponds to 2 projects, 20% to 1, and 40% to 2 -->
+          <div class="manager-seg ongoing" style="width: 40%;" data-tooltip="Ongoing: 2"></div>
+          <div class="manager-seg under-review" style="width: 20%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 40%;" data-tooltip="Completed: 2"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 2: Jane Smith -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> Jane Smith</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 3</p>
+      <p>Total Ongoing: 1</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 1</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Roughly even split -->
+          <div class="manager-seg ongoing" style="width: 33%;" data-tooltip="Ongoing: 1"></div>
+          <div class="manager-seg under-review" style="width: 33%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 34%;" data-tooltip="Completed: 1"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 3: Bob Brown -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> Bob Brown</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 7</p>
+      <p>Total Ongoing: 4</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 2</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Example: 50% (ongoing: 4), 20% (under-review: 1), 30% (completed: 2) -->
+          <div class="manager-seg ongoing" style="width: 50%;" data-tooltip="Ongoing: 4"></div>
+          <div class="manager-seg under-review" style="width: 20%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 30%;" data-tooltip="Completed: 2"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 4: Alice Johnson -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> Alice Johnson</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 4</p>
+      <p>Total Ongoing: 1</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 2</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Example: 25% (ongoing: 1), 25% (under-review: 1), 50% (completed: 2) -->
+          <div class="manager-seg ongoing" style="width: 25%;" data-tooltip="Ongoing: 1"></div>
+          <div class="manager-seg under-review" style="width: 25%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 50%;" data-tooltip="Completed: 2"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 5: Mike Davis -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> Mike Davis</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 6</p>
+      <p>Total Ongoing: 4</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 1</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Example: 60% (ongoing: 4), 10% (under-review: 1), 30% (completed: 1) -->
+          <div class="manager-seg ongoing" style="width: 60%;" data-tooltip="Ongoing: 4"></div>
+          <div class="manager-seg under-review" style="width: 10%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 30%;" data-tooltip="Completed: 1"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 6: Sarah Miller -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> Sarah Miller</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 2</p>
+      <p>Total Ongoing: 0</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 1</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Example: 20% (ongoing: 0), 40% (under-review: 1), 40% (completed: 1) -->
+          <div class="manager-seg ongoing" style="width: 20%;" data-tooltip="Ongoing: 0"></div>
+          <div class="manager-seg under-review" style="width: 40%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 40%;" data-tooltip="Completed: 1"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 7: David Wilson -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> David Wilson</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 8</p>
+      <p>Total Ongoing: 3</p>
+      <p>Total Under-review: 3</p>
+      <p>Total Completed: 2</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Example: 35% (ongoing: 3), 35% (under-review: 3), 30% (completed: 2) -->
+          <div class="manager-seg ongoing" style="width: 35%;" data-tooltip="Ongoing: 3"></div>
+          <div class="manager-seg under-review" style="width: 35%;" data-tooltip="Under-review: 3"></div>
+          <div class="manager-seg completed" style="width: 30%;" data-tooltip="Completed: 2"></div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Card 8: Emily Clark -->
+    <div class="card">
+      <h3><i class="fas fa-user-tie"></i> Emily Clark</h3>
+      <p style="font-size: 14px; font-weight: bold;">Total Assigned Projects: 4</p>
+      <p>Total Ongoing: 2</p>
+      <p>Total Under-review: 1</p>
+      <p>Total Completed: 1</p>
+      <div class="productivity">
+        <div class="manager-bar">
+          <!-- Example: 45% (ongoing: 2), 15% (under-review: 1), 40% (completed: 1) -->
+          <div class="manager-seg ongoing" style="width: 45%;" data-tooltip="Ongoing: 2"></div>
+          <div class="manager-seg under-review" style="width: 15%;" data-tooltip="Under-review: 1"></div>
+          <div class="manager-seg completed" style="width: 40%;" data-tooltip="Completed: 1"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="cards-container editors">
+ <!-- Editor Cards Section -->
+ <div class="cards">
+<!-- Card 1 -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Alice Walker</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 12</p>
+  <p>Total Ongoing: 5</p>
+  <p>Total Under-review: 3</p>
+  <p>Total Completed: 4</p>
+  <div class="productivity">
+   
+    <div class="manager-bar">
+      <!-- 5/12 ≈ 42%, 3/12 = 25%, 4/12 ≈ 33% -->
+      <div class="manager-seg ongoing" style="width: 42%;" data-tooltip="Ongoing: 5"></div>
+      <div class="manager-seg under-review" style="width: 25%;" data-tooltip="Under-review: 3"></div>
+      <div class="manager-seg completed" style="width: 33%;" data-tooltip="Completed: 4"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 2: Bob Johnson -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Bob Johnson</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 8</p>
+  <p>Total Ongoing: 3</p>
+  <p>Total Under-review: 2</p>
+  <p>Total Completed: 3</p>
+  <div class="productivity">
+
+    <div class="manager-bar">
+      <!-- 3/8 ≈ 38%, 2/8 = 25%, 3/8 ≈ 38% -->
+      <div class="manager-seg ongoing" style="width: 38%;" data-tooltip="Ongoing: 3"></div>
+      <div class="manager-seg under-review" style="width: 25%;" data-tooltip="Under-review: 2"></div>
+      <div class="manager-seg completed" style="width: 38%;" data-tooltip="Completed: 3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 3: Charlie Evans -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Charlie Evans</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 15</p>
+  <p>Total Ongoing: 7</p>
+  <p>Total Under-review: 5</p>
+  <p>Total Completed: 3</p>
+  <div class="productivity">
+
+    <div class="manager-bar">
+      <!-- 7/15 ≈ 47%, 5/15 ≈ 33%, 3/15 = 20% -->
+      <div class="manager-seg ongoing" style="width: 47%;" data-tooltip="Ongoing: 7"></div>
+      <div class="manager-seg under-review" style="width: 33%;" data-tooltip="Under-review: 5"></div>
+      <div class="manager-seg completed" style="width: 20%;" data-tooltip="Completed: 3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 4: Diana Smith -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Diana Smith</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 9</p>
+  <p>Total Ongoing: 4</p>
+  <p>Total Under-review: 2</p>
+  <p>Total Completed: 3</p>
+  <div class="productivity">
+  
+    <div class="manager-bar">
+      <!-- 4/9 ≈ 44%, 2/9 ≈ 22%, 3/9 ≈ 34% -->
+      <div class="manager-seg ongoing" style="width: 44%;" data-tooltip="Ongoing: 4"></div>
+      <div class="manager-seg under-review" style="width: 22%;" data-tooltip="Under-review: 2"></div>
+      <div class="manager-seg completed" style="width: 34%;" data-tooltip="Completed: 3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 5: Edward Brown -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Edward Brown</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 11</p>
+  <p>Total Ongoing: 5</p>
+  <p>Total Under-review: 3</p>
+  <p>Total Completed: 3</p>
+  <div class="productivity">
+
+    <div class="manager-bar">
+      <!-- 5/11 ≈ 45%, 3/11 ≈ 27%, 3/11 ≈ 27% -->
+      <div class="manager-seg ongoing" style="width: 45%;" data-tooltip="Ongoing: 5"></div>
+      <div class="manager-seg under-review" style="width: 27%;" data-tooltip="Under-review: 3"></div>
+      <div class="manager-seg completed" style="width: 27%;" data-tooltip="Completed: 3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 6: Fiona Lee -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Fiona Lee</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 7</p>
+  <p>Total Ongoing: 3</p>
+  <p>Total Under-review: 2</p>
+  <p>Total Completed: 2</p>
+  <div class="productivity">
+   
+    <div class="manager-bar">
+      <!-- 3/7 ≈ 43%, 2/7 ≈ 29%, 2/7 ≈ 29% -->
+      <div class="manager-seg ongoing" style="width: 43%;" data-tooltip="Ongoing: 3"></div>
+      <div class="manager-seg under-review" style="width: 29%;" data-tooltip="Under-review: 2"></div>
+      <div class="manager-seg completed" style="width: 29%;" data-tooltip="Completed: 2"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 7: George Harris -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> George Harris</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 10</p>
+  <p>Total Ongoing: 4</p>
+  <p>Total Under-review: 3</p>
+  <p>Total Completed: 3</p>
+  <div class="productivity">
+   
+    <div class="manager-bar">
+      <!-- 4/10 = 40%, 3/10 = 30%, 3/10 = 30% -->
+      <div class="manager-seg ongoing" style="width: 40%;" data-tooltip="Ongoing: 4"></div>
+      <div class="manager-seg under-review" style="width: 30%;" data-tooltip="Under-review: 3"></div>
+      <div class="manager-seg completed" style="width: 30%;" data-tooltip="Completed: 3"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Card 8: Hannah Davis -->
+<div class="card">
+  <h3><i class="fa fa-user"></i> Hannah Davis</h3>
+  <p style="font-size: 14px; font-weight: bold;">Total Assigned Tasks: 14</p>
+  <p>Total Ongoing: 6</p>
+  <p>Total Under-review: 4</p>
+  <p>Total Completed: 4</p>
+  <div class="productivity">
+   
+    <div class="manager-bar">
+      <!-- 6/14 ≈ 43%, 4/14 ≈ 29%, 4/14 ≈ 29% -->
+      <div class="manager-seg ongoing" style="width: 43%;" data-tooltip="Ongoing: 6"></div>
+      <div class="manager-seg under-review" style="width: 29%;" data-tooltip="Under-review: 4"></div>
+      <div class="manager-seg completed" style="width: 29%;" data-tooltip="Completed: 4"></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="cards-container report">
+  <div class="container">
+    
+    <!-- Summary Cards: 4 cards in one row -->
+    <div class="row">
+      <div class="col-md-3">
+        <div class="dashboard-card text-white bg-primary">
+          <div class="dashboard-card-body">
+            <h5 class="dashboard-card-title">Total Projects</h5>
+            <p class="dashboard-card-text">42</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card text-white bg-success">
+          <div class="dashboard-card-body">
+            <h5 class="dashboard-card-title">Active Projects</h5>
+            <p class="dashboard-card-text">28</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card text-white bg-warning">
+          <div class="dashboard-card-body">
+            <h5 class="dashboard-card-title">Delayed Projects</h5>
+            <p class="dashboard-card-text">5</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="dashboard-card text-white bg-danger">
+          <div class="dashboard-card-body">
+            <h5 class="dashboard-card-title">Completed Projects</h5>
+            <p class="dashboard-card-text">9</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Charts Row: 2 charts in one row -->
+    <div class="row">
+      <!-- Project Status Distribution (Pie Chart) -->
+      <div class="col-md-6">
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">Project Status Distribution</div>
+          <div class="dashboard-card-body">
+            <canvas id="statusChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Task Assignment Breakdown (Bar Chart) -->
+      <div class="col-md-6">
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">Task Assignment Breakdown</div>
+          <div class="dashboard-card-body">
+            <canvas id="taskChart" width="400" height="400"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Project Timeline Chart: full width -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">Project Timeline</div>
+          <div class="dashboard-card-body">
+            <div class="chart-container">
+              <canvas id="timelineChart" width="600" height="400"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Productivity Reports: 2 charts in one row -->
+    <div class="row">
+      <!-- Project Manager Productivity (Radar Chart) -->
+      <div class="col-md-6">
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">Project Manager Productivity</div>
+          <div class="dashboard-card-body">
+            <canvas id="pmChart" width="600" height="600"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Editor Task Overview (Horizontal Bar Chart) -->
+      <div class="col-md-6">
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">Editor Task Overview</div>
+          <div class="dashboard-card-body">
+            <canvas id="editorChart" width="500" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  </div>
+</div>
+
+<!-- Modal (hidden by default) -->
+<div class="modal">
+ <div class="modal-content">
+   <span class="modal-close">&times;</span>
+   <div class="modal-header">
+     <h2>Project Name</h2>
+     <p>Order No:</p>
+   </div>
+   <div class="modal-body">
+     <p class="client-name"><strong>Client Name:</strong> John Doe</p>
+     <p class="project-manager"><strong>Project Manager:</strong> Alice Johnson</p>
+     <p class="deadline"><strong>Deadline:</strong> 2025-03-15</p>
+     <h4>Services</h4>
+     <ul>
+       <li>Demo Video – Quantity: 1</li>
+       <li>Explainer Graphics – Quantity: 2</li>
+     </ul>
+     <h4>Files</h4>
+     <table>
+       <thead>
+         <tr>
+           <th>Link</th>
+           <th>Name</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr>
+           <td><a href="#">Google Drive Link</a></td>
+           <td>Project Brief.pdf</td>
+         </tr>
+       </tbody>
+     </table>
+     <h4>Assignee (Tasks)</h4>
+     <table>
+       <thead>
+         <tr>
+           <th>Name</th>
+           <th>Task</th>
+           <th>Priority</th>
+           <th>Status</th>
+         </tr>
+       </thead>
+       <tbody>
+         <tr>
+           <td>Bob Smith</td>
+           <td>Thumbnail Design</td>
+           <td>High</td>
+           <td><i class="fa-solid fa-spinner"></i> Ongoing</td>
+         </tr>
+         <tr>
+           <td>Carol White</td>
+           <td>Explainer Graphics Design</td>
+           <td>Regular</td>
+           <td><i class="fa-solid fa-check-circle"></i> Done</td>
+         </tr>
+       </tbody>
+     </table>
+     <!-- Reuse progress & time bars -->
+     <div class="card-footer" style="margin-top: 20px;">
+       <div class="time-tracker-bar">
+         <div class="time-track">
+           <div class="time-fill2"></div>
+           <span class="time-text">15 days left</span>
+         </div>
+       </div>
+       <div class="progress-bar">
+         <div class="progress-track">
+           <div class="progress-fill2"></div>
+         </div>
+         <span class="progress-percentage">50% done</span>
+       </div>
+     </div>
+   </div>
+ </div>
+        
+        </div>
+    
+</div>
+
+
+  <script>
+     // Column Chart for Project Managers' Workload
+      // Get the canvas context
+      const ctx = document.getElementById('lineChart').getContext('2d');
+
+// Define labels for the projects (Project 1 to Project 8)
+const labels = ['Project 1', 'Project 2', 'Project 3', 'Project 4', 'Project 5', 'Project 6', 'Project 7', 'Project 8'];
+
+// Sample data arrays:
+// Project Completion percentages for 8 projects.
+const projectCompletionData = [70, 50, 30, 80, 90, 60, 40, 100];
+
+// Deadline Left percentages for 8 projects.
+// (For example: a project might have 20% of its allocated time remaining.)
+const deadlineLeftData = [20, 40, 50, 10, 5, 30, 45, 0];
+
+// Create the line chart with two datasets.
+const myLineChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Project Completion (%)',
+        data: projectCompletionData,
+        borderColor: '#4caf50',
+        backgroundColor: 'rgba(76, 175, 80, 0.2)',
+        fill: false,
+        tension: 0.1
+      },
+      {
+        label: 'Deadline Left (%)',
+        data: deadlineLeftData,
+        borderColor: '#2196F3',
+        backgroundColor: 'rgba(33, 150, 243, 0.2)',
+        fill: false,
+        tension: 0.1
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        ticks: {
+          color: '#fff'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.1)'
+        }
+      },
+      y: {
+        beginAtZero: true,
+        max: 100,
+        title: {
+          display: true,
+          text: 'Percentage',
+          color: '#fff'
+        },
+        ticks: {
+          color: '#fff'
+        },
+        grid: {
+          color: 'rgba(255,255,255,0.1)'
+        }
+      }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return context.dataset.label + ': ' + context.parsed.y + '%';
+          }
+        }
+      }
+    }
+  }
+});
+    
+    // Doughnut Chart for Orders Data
+    const ctxDoughnut = document.getElementById('doughnutChart').getContext('2d');
+    const doughnutChart = new Chart(ctxDoughnut, {
+      type: 'doughnut',
+      data: {
+        labels: ['Approved', 'Under-review', 'Ongoing'],
+        datasets: [{
+          data: [3, 4, 14],
+          backgroundColor: [
+            'rgba(0, 230, 118, 0.8)',   // Assigned Orders: custom vibrant green
+            'rgba(255, 238, 88, 0.8)',    // Completed Orders: yellow
+            '#2196F3'    // Unassigned Orders: red
+            
+          ],
+          borderColor: [
+            'rgba(0, 230, 118, 1)',
+             'rgba(255, 238, 88, 1)',
+            '#2196F3'
+           
+          ],
+          borderWidth: 1,
+          cutout: '80%', // Thin doughnut ring
+          spacing: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#fff' }
+          }
+        }
+      }
+    });
+    // 1. Project Status Distribution (Modern Thin Doughnut Chart)
+const ctxStatus = document.getElementById('statusChart').getContext('2d');
+new Chart(ctxStatus, {
+  type: 'doughnut',
+  data: {
+    labels: ['Active', 'Delayed', 'Completed'],
+    datasets: [{
+      data: [28, 5, 9],
+      backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+      borderWidth: 0
+    }]
+  },
+  options: {
+    responsive: false,
+    cutout: '70%', // Creates a thin ring look
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: '#e0e0e0'
+        }
+      }
+    }
+  }
+});
+
+// 2. Task Assignment Breakdown (Modern Bar Chart)
+const ctxTask = document.getElementById('taskChart').getContext('2d');
+new Chart(ctxTask, {
+  type: 'bar',
+  data: {
+    labels: ['Editor 1', 'Editor 2', 'Editor 3', 'Editor 4', 'Editor 5'],
+    datasets: [
+      {
+        label: 'Tasks Assigned',
+        data: [10, 8, 15, 7, 12],
+        backgroundColor: '#007bff',
+        borderRadius: 5,
+        barPercentage: 0.6
+      },
+      {
+        label: 'Tasks Completed',
+        data: [8, 7, 10, 5, 10],
+        backgroundColor: '#28a745',
+        borderRadius: 5,
+        barPercentage: 0.6
+      }
+    ]
+  },
+  options: {
+    responsive: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#e0e0e0' }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#e0e0e0' },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { color: '#e0e0e0' },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      }
+    }
+  }
+});
+
+// 3. Project Timeline (Modern Line Chart)
+const ctxTimeline = document.getElementById('timelineChart').getContext('2d');
+new Chart(ctxTimeline, {
+  type: 'line',
+  data: {
+    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+    datasets: [{
+      label: 'Ongoing Projects',
+      data: [20, 22, 25, 23, 26, 28],
+      fill: false,
+      borderColor: '#17a2b8',
+      tension: 0.3,
+      pointBackgroundColor: '#17a2b8',
+      pointRadius: 5,
+      pointHoverRadius: 7
+    }]
+  },
+  options: {
+    responsive: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#e0e0e0' }
+      }
+    },
+    scales: {
+      x: {
+        ticks: { color: '#e0e0e0' },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { color: '#e0e0e0' },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      }
+    }
+  }
+});
+
+// 4. Project Manager Productivity (Modern Radar Chart)
+const ctxPM = document.getElementById('pmChart').getContext('2d');
+new Chart(ctxPM, {
+  type: 'radar',
+  data: {
+    labels: ['Project Load', 'On-Time %', 'Avg. Completion Time', 'Client Satisfaction'],
+    datasets: [{
+      label: 'Manager 1',
+      data: [5, 80, 20, 90],
+      fill: true,
+      backgroundColor: 'rgba(255, 99, 132, 0.2)',
+      borderColor: 'rgb(255, 99, 132)',
+      pointBackgroundColor: 'rgb(255, 99, 132)'
+    }, {
+      label: 'Manager 2',
+      data: [8, 75, 25, 85],
+      fill: true,
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+      borderColor: 'rgb(54, 162, 235)',
+      pointBackgroundColor: 'rgb(54, 162, 235)'
+    }]
+  },
+  options: {
+    responsive: false,
+    scales: {
+      r: {
+        beginAtZero: true,
+        ticks: { color: '#e0e0e0', backdropColor: 'transparent' },
+        grid: { color: 'rgba(255,255,255,0.1)' },
+        angleLines: { color: 'rgba(255,255,255,0.1)' },
+        pointLabels: { color: '#e0e0e0' }
+      }
+    },
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#e0e0e0' }
+      }
+    }
+  }
+});
+
+// 5. Editor Task Overview (Modern Horizontal Bar Chart)
+const ctxEditor = document.getElementById('editorChart').getContext('2d');
+new Chart(ctxEditor, {
+  type: 'bar',
+  data: {
+    labels: ['Editor 1', 'Editor 2', 'Editor 3', 'Editor 4', 'Editor 5'],
+    datasets: [
+      {
+        label: 'Pending Tasks',
+        data: [2, 1, 3, 2, 1],
+        backgroundColor: '#ffc107',
+        borderRadius: 5,
+        barPercentage: 0.6
+      },
+      {
+        label: 'Completed Tasks',
+        data: [8, 7, 10, 5, 10],
+        backgroundColor: '#28a745',
+        borderRadius: 5,
+        barPercentage: 0.6
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#e0e0e0' }
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: { color: '#e0e0e0' },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      },
+      y: {
+        ticks: { color: '#e0e0e0' },
+        grid: { color: 'rgba(255,255,255,0.1)' }
+      }
+    }
+  }
+});
+
+     // Select all header buttons and the cards-container elements within the wrapper
+     const buttons = document.querySelectorAll('.header-actions .add-btn');
+    const containers = document.querySelectorAll('#cards-wrapper > .cards-container');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', function() {
+        const target = this.getAttribute('data-target');
+
+        // Toggle active state on buttons
+        buttons.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+
+        // Hide all cards-container divs by removing the active class
+        containers.forEach(container => container.classList.remove('active'));
+
+        // Show the target cards-container by adding the active class
+        const targetContainer = document.querySelector(`#cards-wrapper > .cards-container.${target}`);
+        if (targetContainer) {
+          targetContainer.classList.add('active');
+        }
+      });
+    });
+    // Get references to elements.
+    const collapsedSidebar = document.getElementById('collapsedSidebar');
+    const expandedSidebar = document.getElementById('expandedSidebar');
+    const mainContent = document.querySelector('.main-content');
+  
+    // Set initial positions (if not already set via CSS)
+    // Expanded sidebar starts off-screen to the left.
+    expandedSidebar.style.left = '-220px';
+    // Main content margin is set as in collapsed mode.
+    mainContent.style.marginLeft = '60px';
+  
+    // Helper function: animate a numeric CSS property.
+    // element: the DOM element.
+    // property: CSS property name (in camelCase) to animate (e.g. 'left' or 'marginLeft').
+    // start: starting numeric value.
+    // end: ending numeric value.
+    // duration: total duration of the animation (ms).
+    // unit: string unit (e.g., 'px').
+    // callback: function to call when animation completes.
+    function animateProperty(element, property, start, end, duration, unit, callback) {
+      const startTime = performance.now();
+      function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Using linear easing; adjust if desired.
+        const value = start + (end - start) * progress;
+        element.style[property] = value + unit;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          if (typeof callback === 'function') {
+            callback();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+  
+    // Function to show the expanded sidebar with slide-in effect.
+    function showExpandedSidebar() {
+      // Display the expanded sidebar.
+      expandedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from -220px to 0 over 200ms.
+      animateProperty(expandedSidebar, 'left', -220, 0, 200, 'px');
+  
+      // Animate main content margin from 60px to 220px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 60, 220, 200, 'px');
+  
+      // After the animation, hide the collapsed sidebar.
+      setTimeout(() => {
+        collapsedSidebar.style.display = 'none';
+      }, 5);
+    }
+  
+    // Function to hide the expanded sidebar with slide-out effect.
+    function hideExpandedSidebar() {
+      // Show the collapsed sidebar before animation.
+      collapsedSidebar.style.display = 'block';
+  
+      // Animate the expanded sidebar's left property from 0 to -220px over 200ms.
+      animateProperty(expandedSidebar, 'left', 0, -220, 200, 'px', () => {
+        expandedSidebar.style.display = 'none';
+      });
+  
+      // Animate main content margin from 220px to 60px over 200ms.
+      animateProperty(mainContent, 'marginLeft', 220, 60, 200, 'px');
+    }
+  
+    // Attach event listeners.
+    // When clicking the menu button on the collapsed sidebar.
+    document.getElementById('menuToggle').addEventListener('click', () => {
+      showExpandedSidebar();
+    });
+  
+    // When clicking the menu button on the expanded sidebar.
+    document.getElementById('menuToggleExtended').addEventListener('click', () => {
+      hideExpandedSidebar();
+    });
+  
+    // Function to toggle submenu items in the extended sidebar.
+    // This function closes any other open submenu before toggling the selected one.
+    function toggleSubmenu(button) {
+      const parentLi = button.parentElement;
+      const openSubmenus = document.querySelectorAll('.sidebar-extended .has-submenu.active');
+      openSubmenus.forEach((submenu) => {
+        if (submenu !== parentLi) {
+          submenu.classList.remove('active');
+        }
+      });
+      parentLi.classList.toggle('active');
+    }
+   
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', function() {
+        // Grab details from data attributes and inner text
+        const project = card.querySelector('.project-title').innerText;
+        const order = card.querySelector('.order-no').innerText;
+        const client = card.getAttribute('data-client') || "John Doe";
+        const pm = card.getAttribute('data-pm') || "Alice Johnson";
+        const deadline = card.getAttribute('data-deadline') || "2025-03-15";
+        const progress = card.getAttribute('data-progress') || "50% done";
+        const timeLeft = card.getAttribute('data-time') || "15 days left";
+        
+        // Update modal content
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.querySelector('.modal-header h2').innerText = project;
+        modalContent.querySelector('.modal-header p').innerText = order;
+        modalContent.querySelector('.modal-body .client-name').innerHTML = `<strong>Client Name:</strong> ${client}`;
+        modalContent.querySelector('.modal-body .project-manager').innerHTML = `<strong>Project Manager:</strong> ${pm}`;
+        modalContent.querySelector('.modal-body .deadline').innerHTML = `<strong>Deadline:</strong> ${deadline}`;
+        // Note: The progress bar and time text inside the modal footer are static here.
+        
+        // Show the modal
+        document.querySelector('.modal').style.display = 'flex';
+      });
+    });
+    
+    // Close modal when clicking the close button
+    document.querySelector('.modal-close').addEventListener('click', function() {
+      document.querySelector('.modal').style.display = 'none';
+    });
+    
+    // Close modal when clicking outside the modal-content
+    window.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal')) {
+        document.querySelector('.modal').style.display = 'none';
+      }
+    });
+  </script>
+  
+  
+</body>
+</html>
